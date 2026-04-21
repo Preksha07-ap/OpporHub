@@ -1,0 +1,189 @@
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@300,400,500,600,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Clash Display', sans-serif;
+
+  /* Earth Tone Palette - mapped to Tailwind */
+  --color-sage: #8a9a5b;
+  --color-terracotta: #e2725b;
+  --color-cream: #f5f5dc;
+  --color-forest: #1a2a1a;
+  --color-muted-orange: #eab308;
+
+  --animate-text-shimmer: text-shimmer 3s linear infinite;
+
+  @keyframes text-shimmer {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
+:root {
+  /* Enforced Dark Mode (Forest) variables */
+  --bg-primary: #1a2a1a;
+  --bg-card: #1a2a1a;
+  --text-main: #f5f5dc;
+  --text-muted: #8a9a5b;
+
+  /* Claymorphism Shadows - Dark Mode (More subtle/matte) */
+  --clay-shadow-out: 10px 10px 20px #131f13, -10px -10px 20px #213521;
+  --clay-shadow-in: inset 5px 5px 10px #131f13, inset -5px -5px 10px #213521;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+}
+
+/* Claymorphism Utilities */
+.clay-card {
+  background-color: var(--bg-card);
+  border-radius: 32px;
+  box-shadow: var(--clay-shadow-out);
+  transition: all 0.3s ease;
+  border: 4px solid transparent;
+  /* Reserve space for potential border */
+}
+
+.clay-card:hover {
+  transform: translateY(-5px);
+  /* Slightly more pronounced shadow on hover */
+  box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.3), -12px -12px 24px rgba(255, 255, 255, 0.05);
+}
+
+.clay-inset {
+  box-shadow: var(--clay-shadow-in);
+  border-radius: 20px;
+}
+
+.btn-clay {
+  background-color: var(--bg-card);
+  box-shadow: var(--clay-shadow-out);
+  border-radius: 9999px;
+  /* Pill shape */
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.btn-clay:active {
+  box-shadow: var(--clay-shadow-in);
+  transform: scale(0.98);
+}
+
+
+
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+.mask-gradient-y {
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+}
+
+/* Metallic Text */
+.text-metallic {
+  background: linear-gradient(to bottom, #94a3b8 0%, #f1f5f9 50%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Glowing Trace Border */
+.trace-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.trace-card::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background: conic-gradient(transparent 270deg, var(--color-primary-hover) 360deg);
+  transform: translate(-50%, -50%);
+  animation: rotate-border 4s linear infinite;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.trace-card:hover::before {
+  opacity: 1;
+}
+
+.trace-card::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: inherit;
+  z-index: 1;
+  backdrop-filter: blur(12px);
+}
+
+.trace-content {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes rotate-border {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Grain Texture */
+.bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E");
+  background-color: var(--bg-primary);
+}
