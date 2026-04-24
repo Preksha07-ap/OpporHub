@@ -102,8 +102,15 @@ const MyEvents = () => {
                         <Loader className="animate-spin text-primary" size={48} />
                     </div>
                 ) : filteredEvents.length === 0 ? (
-                    <div className="text-center py-12 bg-surface rounded-2xl border border-white/5">
-                        <p className="text-text-muted font-bold text-lg">No events found matching your criteria.</p>
+                    <div className="text-center py-20 bg-surface rounded-3xl border border-dashed border-white/10 flex flex-col items-center">
+                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                            <Plus className="text-text-muted/50" size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-text-main mb-2">No events found</h3>
+                        <p className="text-text-muted mb-8 max-w-xs">You haven't posted any opportunities yet, or none match your filters.</p>
+                        <Link to="/post" className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg">
+                            Post Your First Event
+                        </Link>
                     </div>
                 ) : (
                     filteredEvents.map((event, idx) => (

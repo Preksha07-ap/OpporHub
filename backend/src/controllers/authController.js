@@ -6,7 +6,13 @@ const asyncHandler = require('express-async-handler');
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role, profileData } = req.body;
+  const { name, email, password, role, profileData, website } = req.body;
+
+  // Honeypot check: If the hidden 'website' field is filled, it's a bot
+  if (website) {
+    res.status(400);
+    throw new Error('Registration failed. Please try again.');
+  }
 
   const userExists = await User.findOne({ email });
 

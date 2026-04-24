@@ -14,9 +14,17 @@ const SignUp = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [honeypot, setHoneypot] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Bot check
+        if (honeypot) {
+            console.log("Bot detected!");
+            return;
+        }
+
         setError(null);
         setIsLoading(true);
 
@@ -29,7 +37,8 @@ const SignUp = () => {
                 email,
                 password,
                 role: backendRole,
-                profileData: {}
+                profileData: {},
+                website: honeypot
             });
 
             if (data.role === 'ORGANIZER') {
@@ -97,6 +106,17 @@ const SignUp = () => {
                     )}
 
                     <form className="space-y-4" onSubmit={handleSubmit}>
+                        {/* Honeypot field for bot protection */}
+                        <div style={{ display: 'none' }}>
+                            <input
+                                type="text"
+                                name="website"
+                                tabIndex="-1"
+                                autoComplete="off"
+                                onChange={(e) => setHoneypot(e.target.value)}
+                            />
+                        </div>
+
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-text-main ml-1">
                                 {role === 'student' ? 'Full Name' : 'Organization Name'}

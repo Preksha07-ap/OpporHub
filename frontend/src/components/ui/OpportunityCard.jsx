@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { registerForEvent } from '../../api/registrationService';
 import { Calendar, MapPin, ExternalLink, Clock, Bookmark, BookmarkCheck, CalendarPlus, Check } from 'lucide-react';
 import clsx from 'clsx';
@@ -103,9 +105,18 @@ const OpportunityCard = ({
         setIsAddedToCal(true);
     };
 
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
     const handleApply = async (e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (!user) {
+            navigate('/signin');
+            return;
+        }
+
         if (applyStatus === 'success' || applyStatus === 'error') return;
 
         try {
@@ -114,8 +125,12 @@ const OpportunityCard = ({
             setApplyStatus('success');
         } catch (err) {
             console.error('Registration failed:', err);
-            // If the user isn't logged in, it will fail internally
-            setApplyStatus('error');
+            const message = err.response?.data?.message || '';
+            if (message.toLowerCase().includes('already registered')) {
+                setApplyStatus('success'); // Treat as success if already done
+            } else {
+                setApplyStatus('error');
+            }
         } finally {
             setIsApplying(false);
         }
