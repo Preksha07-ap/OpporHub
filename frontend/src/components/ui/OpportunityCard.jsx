@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { registerForEvent } from '../../api/registrationService';
 import { Calendar, MapPin, ExternalLink, Clock, Bookmark, BookmarkCheck, CalendarPlus, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -150,9 +151,20 @@ const OpportunityCard = ({
     };
 
     return (
-        <div className="clay-card group flex flex-col h-full overflow-hidden relative bg-bg-card">
+        <motion.div 
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17, mass: 1 }}
+            className="clay-card group flex flex-col h-full overflow-hidden relative bg-bg-card transition-colors duration-500 hover:border-emerald-500/50"
+        >
+            {/* Localized Radial Glow */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0"
+                 style={{ 
+                    background: 'radial-gradient(circle at center, rgba(16, 185, 129, 0.15) 0%, transparent 70%)' 
+                 }} 
+            />
+
             {/* Image Header with Clay cutout effect */}
-            <div className="h-44 relative overflow-hidden m-2 rounded-[2rem] clay-inset">
+            <div className="h-44 relative overflow-hidden m-2 rounded-[2rem] clay-inset z-10">
                 {image ? (
                     <img src={image} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
                 ) : (
@@ -288,7 +300,7 @@ const OpportunityCard = ({
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

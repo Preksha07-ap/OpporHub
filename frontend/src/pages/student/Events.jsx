@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import OpportunityCard from '../../components/ui/OpportunityCard';
+import SkeletonCard from '../../components/ui/SkeletonCard';
 import { Filter, Loader2, AlertCircle, ChevronDown, Zap, MapPin, Trophy, Sparkles } from 'lucide-react';
 import { getEvents } from '../../api/eventService';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -262,9 +263,10 @@ const Events = () => {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center p-20 text-terracotta">
-                    <Loader2 size={48} className="animate-spin mb-4" />
-                    <p className="text-text-muted font-medium">Loading high-impact events...</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[...Array(8)].map((_, i) => (
+                        <SkeletonCard key={i} />
+                    ))}
                 </div>
             ) : error ? (
                 <div className="p-8 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex flex-col items-center justify-center text-center">

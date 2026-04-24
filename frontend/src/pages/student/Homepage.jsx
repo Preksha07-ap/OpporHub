@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue, useInView }
 import BentoGrid from '../../components/ui/BentoGrid';
 import TrendingMarquee from '../../components/ui/TrendingMarquee';
 import OpportunityCard from '../../components/ui/OpportunityCard';
+import SkeletonCard from '../../components/ui/SkeletonCard';
 // Image paths from public folder
 const conferenceImg = '/assets/images/conference.jpg';
 const hackathonImg = '/assets/images/hackathon.jpg';
@@ -88,11 +89,14 @@ const Home = () => {
     ];
 
     const [trendingItems, setTrendingItems] = useState([]);
+    const [isLoadingTrending, setIsLoadingTrending] = useState(true);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [stats, setStats] = useState({ opportunities: 0, partners: 0, states: 0 });
 
     useEffect(() => {
         const fetchTrending = async () => {
             try {
+                setIsLoadingTrending(true);
                 const data = await getEvents();
                 if (data && data.length > 0) {
                     const formatted = data.map((ev, idx) => {
@@ -111,7 +115,7 @@ const Home = () => {
                             image: ev.coverImage || "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80"
                         };
                     });
-                    setTrendingItems(formatted.slice(0, 6)); // Top 6 latest
+                    setTrendingItems(formatted.slice(0, 6)); 
 
                     const states = new Set(data.map(e => e.location).filter(Boolean)).size;
                     const partners = new Set(data.filter(e => e.organizerId).map(e => e.organizerId._id || e.organizerId)).size;
@@ -123,6 +127,8 @@ const Home = () => {
                 }
             } catch (err) {
                 console.error("Failed to load trending events:", err);
+            } finally {
+                setIsLoadingTrending(false);
             }
         };
 
@@ -160,8 +166,16 @@ const Home = () => {
             <section className="relative py-24 lg:py-36 flex flex-col items-center text-center overflow-hidden min-h-[80vh] justify-center">
 
                 {/* Floating Content */}
-                <motion.div variants={item} className="z-10 relative max-w-5xl px-4">
-
+                <motion.div 
+                    variants={item} 
+                    animate={{ 
+                        filter: isSearchFocused ? 'blur(4px)' : 'blur(0px)',
+                        opacity: isSearchFocused ? 0.4 : 1,
+                        scale: isSearchFocused ? 0.98 : 1
+                    }}
+                    transition={{ duration: 0.4 }}
+                    className="z-10 relative max-w-5xl px-4"
+                >
                     <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-heading font-black tracking-tight mb-8 leading-tight pb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-primary to-terracotta">
                         A Unified hub <br />
                         for <br />
@@ -170,21 +184,36 @@ const Home = () => {
                     <p className="text-lg md:text-2xl text-text-muted mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
                         Discover student-focused conferences, hackathons, workshops, and open-source programs to kickstart your tech journey.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-                        <Link to="/conferences">
-                            <motion.button
-                                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(226, 114, 91, 0.5)" }}
-                                whileTap={{ scale: 0.95 }}
-                                className="bg-terracotta text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg flex items-center gap-2 shadow-lg shadow-terracotta/30 border-2 border-transparent hover:border-white/20 transition-all"
-                            >
-                                Explore Now <ArrowRight size={20} />
-                            </motion.button>
-                        </Link>
-                        <button className="px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-text-main border-2 border-text-muted/30 hover:border-text-muted hover:bg-white/5 transition-all text-base sm:text-lg backdrop-blur-sm">
-                            Learn More
+                </motion.div>
+
+                {/* Semantic Search Bar */}
+                <motion.div 
+                    variants={item}
+                    className="z-20 relative w-full max-w-2xl mt-8 px-4"
+                >
+                    <div className={cn(
+                        "relative flex items-center transition-all duration-500 rounded-2xl overflow-hidden border-2 shadow-2xl group",
+                        isSearchFocused 
+                            ? "border-emerald-500 bg-[#0a0a0a] scale-110 shadow-emerald-500/20" 
+                            : "border-white/10 bg-[#121212] hover:border-white/20"
+                    )}>
+                        <Search className={cn(
+                            "absolute left-6 transition-colors duration-300",
+                            isSearchFocused ? "text-emerald-500" : "text-text-muted"
+                        )} size={24} />
+                        <input 
+                            type="text"
+                            placeholder="Search conferences, hackathons, skills..."
+                            onFocus={() => setIsSearchFocused(true)}
+                            onBlur={() => setIsSearchFocused(false)}
+                            className="w-full pl-16 pr-32 py-6 bg-transparent text-white text-xl font-medium focus:outline-none placeholder:text-white/20"
+                        />
+                        <button className="absolute right-3 bg-emerald-500 hover:bg-emerald-600 text-black font-black px-6 py-3 rounded-xl transition-all active:scale-95 text-sm uppercase tracking-tighter">
+                            Discovery
                         </button>
                     </div>
                 </motion.div>
+
             </section>
 
             {/* Bento Grid Layout */}
@@ -215,7 +244,14 @@ const Home = () => {
                             </div>
 
                             <div className="flex-grow relative overflow-hidden -mx-4 px-4">
-                                <TrendingMarquee items={trendingItems} />
+                                {isLoadingTrending ? (
+                                    <div className="space-y-4">
+                                        <SkeletonCard />
+                                        <SkeletonCard />
+                                    </div>
+                                ) : (
+                                    <TrendingMarquee items={trendingItems} />
+                                )}
                             </div>
 
                             <div className="mt-6 pt-4 border-t border-black/5 dark:border-white/5 text-center relative z-10">

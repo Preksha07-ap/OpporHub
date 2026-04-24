@@ -13,6 +13,7 @@
   --color-cream: #f5f5dc;
   --color-forest: #1a2a1a;
   --color-muted-orange: #eab308;
+  --color-emerald: #10b981;
 
   --animate-text-shimmer: text-shimmer 3s linear infinite;
 
@@ -28,6 +29,15 @@
     100% {
       background-position: 0% 50%;
     }
+  }
+
+  @keyframes pulse-skeleton {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .animate-pulse-skeleton {
+    animation: pulse-skeleton 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
 
@@ -73,9 +83,17 @@ h6 {
 }
 
 .clay-card:hover {
-  transform: translateY(-5px);
-  /* Slightly more pronounced shadow on hover */
-  box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.3), -12px -12px 24px rgba(255, 255, 255, 0.05);
+  transform: scale(1.02) translateY(-5px);
+  border-color: var(--color-emerald);
+  box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.25), 
+              0 0 20px rgba(16, 185, 129, 0.1);
+}
+
+.glass-nav {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 23, 42, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .clay-inset {

@@ -61,24 +61,12 @@ const Navbar = () => {
   return (
     <>
       <motion.nav
-        initial={{ width: "95%", y: 0 }}
-        animate={{
-          width: isScrolled ? "fit-content" : "95%",
-          y: isScrolled ? 10 : 24,
-          borderRadius: "9999px",
-        }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-        className={`fixed left-1/2 -translate-x-1/2 z-50 max-w-5xl`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={`fixed top-0 left-0 right-0 z-50 glass-nav h-20 flex items-center`}
       >
-        <motion.div
-          layout
-          className={`
-             relative flex items-center justify-between px-4 py-3 md:px-6 md:py-3 rounded-full border transition-all duration-300
-             ${isScrolled
-              ? 'bg-bg-card/80 backdrop-blur-3xl border-transparent shadow-[0_0_20px_rgba(138,154,91,0.1)] ring-1 ring-white/5'
-              : 'clay-card border-none'}
-           `}
-        >
+        <div className="container mx-auto px-6 max-w-7xl flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group mr-8">
             {location.pathname !== '/' && (
@@ -218,7 +206,7 @@ const Navbar = () => {
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-        </motion.div>
+        </div>
 
         {/* Mobile Menu Dropdown */}
         <AnimatePresence>
