@@ -81,7 +81,7 @@ const Contributions = () => {
             const link = (ev.link || '').toLowerCase();
             
             if (filters.type === 'GitHub Issues') {
-                const isGithub = link.includes('github.com') || tags.includes('good first issue') || tags.includes('contribution');
+                const isGithub = link.includes('github.com') || tags.includes('good first issue') || tags.includes('good first issues') || tags.includes('contribution');
                 if (!isGithub) return false;
             }
 

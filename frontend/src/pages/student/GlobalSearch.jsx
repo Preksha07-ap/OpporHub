@@ -35,7 +35,10 @@ const GlobalSearch = () => {
         return items.filter(ev => {
             const matchesTitle = ev.title?.toLowerCase()?.includes(searchLower);
             const matchesOrg = (ev.organizerId?.name || ev.org)?.toLowerCase()?.includes(searchLower);
-            const matchesTags = ev.tags?.some(tag => tag.toLowerCase().includes(searchLower));
+            const matchesTags = ev.tags?.some(tag => {
+                const t = tag.toLowerCase();
+                return t.includes(searchLower) || searchLower.includes(t);
+            });
             const matchesDescription = ev.description?.toLowerCase()?.includes(searchLower);
             const matchesType = ev.type?.toLowerCase()?.includes(searchLower);
             return matchesTitle || matchesOrg || matchesTags || matchesType || matchesDescription;

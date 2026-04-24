@@ -6,7 +6,7 @@ const connectDB = require('./src/config/db');
 // Connect to database
 connectDB();
 
-// Initialize automated jobs
+// Initialize automated aggregator jobs
 const { startCronJobs } = require('./src/utils/cronJobs');
 startCronJobs();
 
