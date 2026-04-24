@@ -132,10 +132,24 @@ const Navbar = () => {
                     {/* Search Bar for Students */}
                     {userRole !== 'organizer' && (
                         <div className="relative group mr-2">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-primary transition-colors z-10" size={16} />
+                            <Search 
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-primary transition-colors z-10 cursor-pointer" 
+                                size={16} 
+                                onClick={() => {
+                                    const val = document.getElementById('nav-search')?.value;
+                                    if(val) navigate(`/search?q=${encodeURIComponent(val)}`);
+                                }}
+                            />
                             <input 
+                                id="nav-search"
                                 type="text" 
-                                placeholder="Search..." 
+                                placeholder="Search everything..." 
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && e.target.value) {
+                                        navigate(`/search?q=${encodeURIComponent(e.target.value)}`);
+                                        e.target.value = ''; // clear
+                                    }
+                                }}
                                 className="w-40 lg:w-60 bg-surface/80 hover:bg-surface border border-white/5 hover:border-white/10 rounded-full py-2 pl-9 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all text-text-main placeholder:text-text-muted focus:bg-surface"
                             />
                         </div>

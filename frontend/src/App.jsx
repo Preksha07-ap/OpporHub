@@ -8,6 +8,7 @@ import Events from './pages/student/Events';
 import Workshops from './pages/student/Workshops';
 import Contributions from './pages/student/Contributions';
 import Internships from './pages/student/Internships';
+import GlobalSearch from './pages/student/GlobalSearch';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import CreateOpportunity from './pages/organizer/CreateOpportunity';
@@ -49,6 +50,7 @@ function App() {
             <Route path="workshops" element={<Workshops />} />
             <Route path="contributions" element={<Contributions />} />
             <Route path="internships" element={<Internships />} />
+            <Route path="search" element={<GlobalSearch />} />
             <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
             

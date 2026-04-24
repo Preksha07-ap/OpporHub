@@ -147,7 +147,7 @@ const Home = () => {
     const handleSearch = (e) => {
         if (e) e.preventDefault();
         if (searchQuery.trim()) {
-            navigate(`/events?q=${encodeURIComponent(searchQuery.trim())}`);
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
         }
     };
 
