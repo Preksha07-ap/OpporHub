@@ -7,6 +7,13 @@ import BentoGrid from '../../components/ui/BentoGrid';
 import TrendingMarquee from '../../components/ui/TrendingMarquee';
 import OpportunityCard from '../../components/ui/OpportunityCard';
 import SkeletonCard from '../../components/ui/SkeletonCard';
+import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+// Utility for consolidating classes
+function cn(...inputs) {
+    return twMerge(clsx(inputs));
+}
 // Image paths from public folder
 const conferenceImg = '/assets/images/conference.jpg';
 const hackathonImg = '/assets/images/hackathon.jpg';
