@@ -156,10 +156,6 @@ const SignUp = () => {
                             </div>
                         </div>
 
-                                />
-                            </div>
-                        </div>
-
                         {role === 'student' && (
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-text-main ml-1">Current Year of Study</label>
