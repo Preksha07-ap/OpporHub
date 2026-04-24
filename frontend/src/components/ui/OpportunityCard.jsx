@@ -39,15 +39,6 @@ const OpportunityCard = ({
         if (id) trackEvent(id, 'view').catch(() => {});
     }, [id]);
 
-    const handleApply = async (e) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        if (id) trackEvent(id, 'click').catch(() => {});
-        if (link) window.open(link, '_blank');
-    };
-    
     // Application States
     const [isApplying, setIsApplying] = useState(false);
     const [applyStatus, setApplyStatus] = useState(null); // null, 'success', 'error'
@@ -129,20 +120,33 @@ const OpportunityCard = ({
     const navigate = useNavigate();
 
     const handleApply = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
+        // 1. Track the engagement click immediately
+        if (id) trackEvent(id, 'click').catch(() => {});
+
+        // 2. Auth Check
         if (!user) {
             navigate('/signin');
             return;
         }
 
-        if (applyStatus === 'success' || applyStatus === 'error') return;
+        if (applyStatus === 'success' || applyStatus === 'error') {
+            if (link) window.open(link, '_blank');
+            return;
+        }
 
         try {
             setIsApplying(true);
+            // 3. Register internally if it's an internal event
             await registerForEvent(id);
             setApplyStatus('success');
+            
+            // 4. Open external link if provided
+            if (link) window.open(link, '_blank');
         } catch (err) {
             console.error('Registration failed:', err);
             const message = err.response?.data?.message || '';
