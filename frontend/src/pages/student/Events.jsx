@@ -130,8 +130,8 @@ const Events = () => {
             // 7. Global Search Match (from URL query)
             if (query) {
                 const searchLower = query.toLowerCase();
-                const matchesTitle = ev.title?.toLowerCase().includes(searchLower);
-                const matchesOrg = ev.organizerId?.name?.toLowerCase().includes(searchLower) || ev.org?.toLowerCase().includes(searchLower);
+                const matchesTitle = ev.title?.toLowerCase()?.includes(searchLower);
+                const matchesOrg = (ev.organizerId?.name || ev.org)?.toLowerCase()?.includes(searchLower);
                 const matchesTags = ev.tags?.some(tag => tag.toLowerCase().includes(searchLower));
                 if (!matchesTitle && !matchesOrg && !matchesTags) return false;
             }
@@ -288,7 +288,7 @@ const Events = () => {
                     <h3 className="text-xl font-bold mb-2">Oops!</h3>
                     <p>{error}</p>
                 </div>
-            ) : isFiltering ? (
+            ) : (isFiltering || query) ? (
                 // --- FILTERED GRID VIEW ---
                 <div className="mb-16">
                     <AnimatePresence mode="wait">
