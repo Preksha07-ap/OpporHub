@@ -196,7 +196,7 @@ const sources = [
                     endDate: endDate,
                     deadline: endDate,
                     link: issue.html_url,
-                    tags: ['Open Source', 'Contribution', 'Beginner Friendly'],
+                    tags: ['Open Source', 'Contribution', 'Beginner Friendly', 'Good First Issue', 'Good First Issues'],
                     location: 'Remote',
                     type: 'Open Source',
                     format: 'Online',
