@@ -75,7 +75,8 @@ const Workshops = () => {
             image: event.coverImage,
             link: event.link,
             outcomes: event.outcomes || [],
-            perks: event.perks || []
+            perks: event.perks || [],
+            engagement: event.engagement
         };
     };
 

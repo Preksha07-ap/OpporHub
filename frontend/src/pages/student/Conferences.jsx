@@ -120,7 +120,8 @@ const Conferences = () => {
             tags: event.tags || [],
             type: event.type || 'Conference',
             image: event.coverImage,
-            link: event.link
+            link: event.link,
+            engagement: event.engagement
         };
     };
 

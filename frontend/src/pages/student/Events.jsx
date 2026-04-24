@@ -82,7 +82,8 @@ const Events = () => {
             type: event.type,
             image: event.coverImage,
             link: event.link,
-            perks: event.perks || []
+            perks: event.perks || [],
+            engagement: event.engagement // new
         };
     };
 

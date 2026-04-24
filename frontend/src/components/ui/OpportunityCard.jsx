@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { registerForEvent } from '../../api/registrationService';
-import { Calendar, MapPin, ExternalLink, Clock, Bookmark, BookmarkCheck, CalendarPlus, Check } from 'lucide-react';
+import { trackEvent } from '../../api/eventService';
+import { Calendar, MapPin, ExternalLink, Clock, Bookmark, BookmarkCheck, CalendarPlus, Check, TrendingUp, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -24,10 +25,28 @@ const OpportunityCard = ({
     price,
     link,
     perks = [],
-    outcomes = []
+    outcomes = [],
+    engagement // new prop
 }) => {
     const [isSaved, setIsSaved] = useState(false);
     const [isAddedToCal, setIsAddedToCal] = useState(false);
+    
+    // Simulate live interest if no real data exists
+    const liveInterest = (engagement?.clicks || 0) + (engagement?.baseInterest || 0);
+
+    useEffect(() => {
+        // Track a 'view' when the card appears
+        if (id) trackEvent(id, 'view').catch(() => {});
+    }, [id]);
+
+    const handleApply = async (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        if (id) trackEvent(id, 'click').catch(() => {});
+        if (link) window.open(link, '_blank');
+    };
     
     // Application States
     const [isApplying, setIsApplying] = useState(false);
@@ -172,6 +191,16 @@ const OpportunityCard = ({
                         <span className="text-5xl font-heading font-bold opacity-40">{title[0]}</span>
                     </div>
                 )}
+
+                {/* Trending Badge (Social Proof) */}
+                <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5 items-end">
+                    <div className="flex items-center gap-1.5 bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-full border border-emerald-400/30 shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse-skeleton">
+                        <Users size={12} className="text-black" />
+                        <span className="text-[10px] font-black text-black uppercase tracking-tighter">
+                            {liveInterest} INTERESTED
+                        </span>
+                    </div>
+                </div>
 
                 {/* Save for Later Button */}
                 <button 

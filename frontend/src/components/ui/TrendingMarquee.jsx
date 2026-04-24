@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight, ArrowUpRight } from 'lucide-react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -41,9 +41,17 @@ const TrendingCard = ({ item }) => (
                 {item.title}
             </h4>
 
-            <div className="flex items-center gap-2 mt-1 text-xs text-text-muted">
-                <MapPin size={10} className="shrink-0" />
-                <span className="truncate">{item.loc}</span>
+            <div className="flex items-center justify-between gap-2 mt-1">
+                <div className="flex items-center gap-1.5 text-xs text-text-muted min-w-0">
+                    <MapPin size={10} className="shrink-0" />
+                    <span className="truncate">{item.loc}</span>
+                </div>
+                {item.trendingScore && (
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 whitespace-nowrap">
+                        <ArrowUpRight size={10} />
+                        {item.trendingScore}
+                    </div>
+                )}
             </div>
         </div>
     </div>

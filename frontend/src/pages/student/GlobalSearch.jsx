@@ -94,7 +94,8 @@ const GlobalSearch = () => {
                                 tags: item.tags || [],
                                 type: item.type,
                                 image: item.coverImage,
-                                link: item.link
+                                link: item.link,
+                                engagement: item.engagement
                             }} 
                         />
                     ))}

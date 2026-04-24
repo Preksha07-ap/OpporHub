@@ -158,6 +158,29 @@ const rejectEvent = asyncHandler(async (req, res) => {
   res.json(event);
 });
 
+// @desc    Track event engagement (view/click)
+// @route   POST /api/events/:id/track
+// @access  Public
+const trackEngagement = asyncHandler(async (req, res) => {
+  const { type } = req.body; // 'view' or 'click'
+  const event = await Event.findById(req.params.id);
+
+  if (!event) {
+    res.status(404);
+    throw new Error('Event not found');
+  }
+
+  if (!event.engagement) {
+    event.engagement = { views: 0, clicks: 0, baseInterest: Math.floor(Math.random() * 50) + 10 };
+  }
+
+  if (type === 'view') event.engagement.views += 1;
+  if (type === 'click') event.engagement.clicks += 1;
+
+  await event.save();
+  res.json({ success: true, engagement: event.engagement });
+});
+
 module.exports = {
   createEvent,
   getEvents,

@@ -94,7 +94,8 @@ const Internships = () => {
             tags: event.tags || [],
             type: event.type,
             image: event.coverImage || 'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&q=80&w=800',
-            link: event.link
+            link: event.link,
+            engagement: event.engagement
         };
     };
 

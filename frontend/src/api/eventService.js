@@ -54,3 +54,8 @@ export const rejectEvent = async (id) => {
   const { data } = await apiClient.put(`/events/admin/${id}/reject`);
   return data;
 };
+
+export const trackEvent = async (id, type) => {
+  const { data } = await apiClient.post(`/events/${id}/track`, { type });
+  return data;
+};

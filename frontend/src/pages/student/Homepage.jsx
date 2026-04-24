@@ -121,7 +121,8 @@ const Home = () => {
                             loc: ev.location || 'Remote',
                             date: ev.startDate ? new Date(ev.startDate).toLocaleDateString() : 'TBA',
                             color: colors[idx % colors.length],
-                            image: ev.coverImage || "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80"
+                            image: ev.coverImage || "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80",
+                            trendingScore: (ev.engagement?.clicks || 0) + (ev.engagement?.baseInterest || 10) + (idx * 5)
                         };
                     });
                     setTrendingItems(formatted.slice(0, 6)); 
@@ -263,6 +264,10 @@ const Home = () => {
                             <div className="flex items-center gap-2 mb-6 relative z-10">
                                 <span className="text-2xl animate-bounce">🔥</span>
                                 <h3 className="text-2xl font-heading font-bold text-text-main">Trending Now</h3>
+                                <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Live Pulse</span>
+                                </div>
                             </div>
 
                             <div className="flex-grow relative overflow-hidden -mx-4 px-4">

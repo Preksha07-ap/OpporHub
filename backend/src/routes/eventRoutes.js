@@ -9,7 +9,8 @@ const {
   getMyEvents,
   getPendingEvents,
   approveEvent,
-  rejectEvent
+  rejectEvent,
+  trackEngagement
 } = require('../controllers/eventController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const upload = require('../config/cloudinary');
@@ -33,5 +34,7 @@ router.route('/:id')
   .get(getEventById)
   .put(protect, authorize('ORGANIZER'), upload.single('coverImage'), updateEvent)
   .delete(protect, authorize('ORGANIZER'), deleteEvent);
+
+router.post('/:id/track', trackEngagement);
 
 module.exports = router;

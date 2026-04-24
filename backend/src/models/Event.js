@@ -117,6 +117,11 @@ const eventSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  engagement: {
+    views: { type: Number, default: 0 },
+    clicks: { type: Number, default: 0 },
+    baseInterest: { type: Number, default: () => Math.floor(Math.random() * 50) + 10 } // Initial "seed" interest
+  },
 }, {
   timestamps: true,
 });
