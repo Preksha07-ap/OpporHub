@@ -837,4 +837,4 @@ const startCronJobs = () => {
     runAggregatorEngine();
 };
 
-module.exports = { startCronJobs };
+module.exports = { startCronJobs, runAggregatorEngine };

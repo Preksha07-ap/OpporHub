@@ -52,10 +52,8 @@ const Events = () => {
         const fetchEvents = async () => {
             try {
                 const data = await getEvents();
-                // We define Events as anything that fits these short-term specific types
-                const validTypes = ['hackathon', 'tech talk', 'meetup', 'webinar', 'college fest', 'startup event', 'conference', 'workshop'];
-                const eventSectionData = data.filter(e => e.type && validTypes.includes(e.type.toLowerCase()));
-                setEvents(eventSectionData);
+                // Discovery Hub now shows EVERY high-signal opportunity by default
+                setEvents(data);
             } catch (err) {
                 setError('Failed to fetch events from the server.');
                 console.error(err);

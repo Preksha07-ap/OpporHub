@@ -194,6 +194,22 @@ const trackEngagement = asyncHandler(async (req, res) => {
   res.json({ success: true, engagement: event.engagement });
 });
 
+// @desc    Force run aggregator (Debug)
+// @route   POST /api/events/debug/force-aggregate
+// @access  Public
+const forceAggregate = asyncHandler(async (req, res) => {
+  const { runAggregatorEngine } = require('../utils/cronJobs');
+  const User = require('../models/User');
+
+  const bot = await User.findOne({ email: 'bot@opporhub.com' });
+  if (bot) {
+    await Event.deleteMany({ organizerId: bot._id });
+  }
+
+  runAggregatorEngine();
+  res.json({ success: true, message: 'Aggregation triggered.' });
+});
+
 module.exports = {
   createEvent,
   getEvents,
@@ -203,5 +219,7 @@ module.exports = {
   getMyEvents,
   getPendingEvents,
   approveEvent,
-  rejectEvent
+  rejectEvent,
+  trackEngagement,
+  forceAggregate
 };
