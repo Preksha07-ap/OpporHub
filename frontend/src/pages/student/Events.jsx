@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import OpportunityCard from '../../components/ui/OpportunityCard';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import { Filter, Loader2, AlertCircle, ChevronDown, Zap, MapPin, Trophy, Sparkles } from 'lucide-react';
@@ -30,6 +31,9 @@ const Events = () => {
         participationType: 'All',
         duration: 'All'
     });
+    
+    const [searchParams] = useSearchParams();
+    const query = searchParams.get('q') || '';
     
     const [activeDropdown, setActiveDropdown] = useState(null);
     const filterBarRef = useRef(null);
@@ -122,12 +126,22 @@ const Events = () => {
                     if (eventDate < now) return false;
                 }
             }
+            
+            // 7. Global Search Match (from URL query)
+            if (query) {
+                const searchLower = query.toLowerCase();
+                const matchesTitle = ev.title?.toLowerCase().includes(searchLower);
+                const matchesOrg = ev.organizerId?.name?.toLowerCase().includes(searchLower) || ev.org?.toLowerCase().includes(searchLower);
+                const matchesTags = ev.tags?.some(tag => tag.toLowerCase().includes(searchLower));
+                if (!matchesTitle && !matchesOrg && !matchesTags) return false;
+            }
+
             return true;
         });
-    }, [events, filters]);
+    }, [events, filters, query]);
 
     const smartSections = useMemo(() => {
-        if (isFiltering) return null;
+        if (isFiltering || query) return null;
         
         const now = new Date();
         const nextWeek = new Date(now);

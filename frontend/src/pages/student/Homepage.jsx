@@ -98,7 +98,9 @@ const Home = () => {
     const [trendingItems, setTrendingItems] = useState([]);
     const [isLoadingTrending, setIsLoadingTrending] = useState(true);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [stats, setStats] = useState({ opportunities: 0, partners: 0, states: 0 });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTrending = async () => {
@@ -141,6 +143,13 @@ const Home = () => {
 
         fetchTrending();
     }, []);
+
+    const handleSearch = (e) => {
+        if (e) e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/events?q=${encodeURIComponent(searchQuery.trim())}`);
+        }
+    };
 
     const container = {
         hidden: { opacity: 0 },
@@ -211,11 +220,17 @@ const Home = () => {
                         <input 
                             type="text"
                             placeholder="Search conferences, hackathons, skills..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setIsSearchFocused(false)}
                             className="w-full pl-16 pr-32 py-6 bg-transparent text-white text-xl font-medium focus:outline-none placeholder:text-white/20"
                         />
-                        <button className="absolute right-3 bg-emerald-500 hover:bg-emerald-600 text-black font-black px-6 py-3 rounded-xl transition-all active:scale-95 text-sm uppercase tracking-tighter">
+                        <button 
+                            onClick={handleSearch}
+                            className="absolute right-3 bg-emerald-500 hover:bg-emerald-600 text-black font-black px-6 py-3 rounded-xl transition-all active:scale-95 text-sm uppercase tracking-tighter"
+                        >
                             Discovery
                         </button>
                     </div>
