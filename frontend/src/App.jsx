@@ -18,6 +18,24 @@ import Analytics from './pages/organizer/Analytics';
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import PostEvent from './pages/organizer/PostEvent';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null; // Or a loading spinner
+
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
@@ -33,14 +51,47 @@ function App() {
             <Route path="internships" element={<Internships />} />
             <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
-            <Route path="post" element={<PostEvent />} />
-            <Route path="create" element={<CreateOpportunity />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="org-dashboard" element={<OrganizerDashboard />} />
-            <Route path="my-events" element={<MyEvents />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="profile-settings" element={<OrganizerProfile />} />
-            <Route path="admin-dashboard" element={<AdminDashboard />} />
+            
+            {/* Protected Student Routes */}
+            <Route path="dashboard" element={
+              <ProtectedRoute allowedRoles={['STUDENT']}>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+
+            {/* Protected Organizer Routes */}
+            <Route path="post" element={
+              <ProtectedRoute allowedRoles={['ORGANIZER']}>
+                <PostEvent />
+              </ProtectedRoute>
+            } />
+            <Route path="org-dashboard" element={
+              <ProtectedRoute allowedRoles={['ORGANIZER']}>
+                <OrganizerDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="my-events" element={
+              <ProtectedRoute allowedRoles={['ORGANIZER']}>
+                <MyEvents />
+              </ProtectedRoute>
+            } />
+            <Route path="analytics" element={
+              <ProtectedRoute allowedRoles={['ORGANIZER']}>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="profile-settings" element={
+              <ProtectedRoute allowedRoles={['ORGANIZER']}>
+                <OrganizerProfile />
+              </ProtectedRoute>
+            } />
+
+            {/* Protected Admin Routes */}
+            <Route path="admin-dashboard" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
           </Route>
         </Routes>
       </Router>

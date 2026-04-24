@@ -24,10 +24,12 @@ const SignIn = () => {
             
             // Check if returned user role matches selected tab role (optional logic but good UX)
             // Even if it doesn't match perfectly, we navigate based on what they actually are
-            if (data.role === 'ORGANIZER') {
+            if (data.role === 'ADMIN') {
+                navigate('/admin-dashboard');
+            } else if (data.role === 'ORGANIZER') {
                 navigate('/org-dashboard');
             } else {
-                navigate('/dashboard'); // or '/'
+                navigate('/dashboard');
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to sign in. Please check your credentials.');
