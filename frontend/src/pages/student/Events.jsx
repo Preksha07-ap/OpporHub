@@ -7,7 +7,7 @@ import { getEvents } from '../../api/eventService';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FILTER_OPTIONS = {
-    type: ['All', 'Hackathon', 'Tech Talk', 'Meetup', 'Webinar', 'College Fest', 'Startup Event', 'Conference', 'Workshop'],
+    type: ['All', 'Hackathon', 'Tech Talk', 'Meetup', 'Webinar', 'College Fest', 'Startup Event'],
     location: ['All India', 'Bangalore', 'Delhi', 'Mumbai', 'Remote'],
     time: ['All', 'Today', 'This Week', 'Upcoming'],
     mode: ['All', 'Online', 'Offline', 'Hybrid'],
@@ -52,8 +52,11 @@ const Events = () => {
         const fetchEvents = async () => {
             try {
                 const data = await getEvents();
-                // Discovery Hub now shows EVERY high-signal opportunity by default
-                setEvents(data);
+                // We define Events as short-term activities (Hackathons, Meetups, etc.)
+                // We EXPLICITLY exclude Internships, Workshops, and Open Source as they have their own sections.
+                const validTypes = ['hackathon', 'tech talk', 'meetup', 'webinar', 'college fest', 'startup event'];
+                const eventSectionData = data.filter(e => e.type && validTypes.includes(e.type.toLowerCase()));
+                setEvents(eventSectionData);
             } catch (err) {
                 setError('Failed to fetch events from the server.');
                 console.error(err);

@@ -10,8 +10,7 @@ const {
   getPendingEvents,
   approveEvent,
   rejectEvent,
-  trackEngagement,
-  forceAggregate
+  trackEngagement
 } = require('../controllers/eventController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const upload = require('../config/cloudinary');
@@ -37,6 +36,5 @@ router.route('/:id')
   .delete(protect, authorize('ORGANIZER'), deleteEvent);
 
 router.post('/:id/track', trackEngagement);
-router.post('/debug/force-aggregate', forceAggregate);
 
 module.exports = router;
