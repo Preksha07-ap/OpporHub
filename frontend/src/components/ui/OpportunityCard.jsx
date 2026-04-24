@@ -32,7 +32,9 @@ const OpportunityCard = ({
     const [isAddedToCal, setIsAddedToCal] = useState(false);
     
     // Simulate live interest if no real data exists
-    const liveInterest = (engagement?.clicks || 0) + (engagement?.baseInterest || 0);
+    // Fallback to a seeded number based on the ID if engagement is missing
+    const seed = id ? (parseInt(id.toString().substring(0, 8), 16) % 40) + 10 : 15;
+    const liveInterest = (engagement?.clicks || 0) + (engagement?.baseInterest || seed);
 
     useEffect(() => {
         // Track a 'view' when the card appears
