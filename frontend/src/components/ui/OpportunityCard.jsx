@@ -39,7 +39,7 @@ const OpportunityCard = ({
     // Logic for "Popular Among" demographic
     const getTopYear = () => {
         const demo = engagement?.demographics;
-        if (!demo) return (id ? (parseInt(id.toString().substring(1, 4), 16) % 4) + 1 : 2);
+        if (!demo) return (id ? (parseInt(id.toString().slice(-3), 16) % 4) + 1 : 2);
         
         // Check real data first
         const years = [demo.year1, demo.year2, demo.year3, demo.year4];
