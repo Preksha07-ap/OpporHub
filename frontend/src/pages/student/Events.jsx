@@ -7,7 +7,7 @@ import { getEvents } from '../../api/eventService';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FILTER_OPTIONS = {
-    type: ['All', 'Hackathon', 'Tech Talk', 'Meetup', 'Webinar', 'College Fest', 'Startup Event'],
+    type: ['All', 'Hackathon', 'Tech Talk', 'Meetup', 'Webinar', 'College Fest', 'Startup Event', 'Conference', 'Workshop'],
     location: ['All India', 'Bangalore', 'Delhi', 'Mumbai', 'Remote'],
     time: ['All', 'Today', 'This Week', 'Upcoming'],
     mode: ['All', 'Online', 'Offline', 'Hybrid'],
@@ -53,7 +53,7 @@ const Events = () => {
             try {
                 const data = await getEvents();
                 // We define Events as anything that fits these short-term specific types
-                const validTypes = ['hackathon', 'tech talk', 'meetup', 'webinar', 'college fest', 'startup event'];
+                const validTypes = ['hackathon', 'tech talk', 'meetup', 'webinar', 'college fest', 'startup event', 'conference', 'workshop'];
                 const eventSectionData = data.filter(e => e.type && validTypes.includes(e.type.toLowerCase()));
                 setEvents(eventSectionData);
             } catch (err) {
