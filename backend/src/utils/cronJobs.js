@@ -180,7 +180,7 @@ const sources = [
     {
         name: 'GitHub Open Source "Good First Issues"',
         adapterType: 'API',
-        url: 'https://api.github.com/search/issues?q=label:"good-first-issue"+is:issue+is:open&sort=created&order=desc&per_page=10',
+        url: 'https://api.github.com/search/issues?q=label:"good-first-issue"+is:issue+is:open&sort=created&order=desc&per_page=50',
         method: 'GET',
         headers: { 'User-Agent': 'OpporHub-Platform-Aggregator' },
         parser: (data) => {
@@ -303,6 +303,24 @@ const sources = [
                     status: "Upcoming",
                     capacity: 500,
                     coverImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "Google I/O Extended 2026 - Mumbai",
+                    description: "Bringing the magic of Google I/O to Mumbai. Join us for developer keynotes, tech talks, and local community networking.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 25)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 25)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 20)).toISOString(),
+                    link: "https://gdg.community.dev/events/details/google-io-extended-mumbai",
+                    tags: ['Google', 'Android', 'Flutter', 'Cloud'],
+                    location: "Mumbai",
+                    city: "Mumbai",
+                    country: "India",
+                    source: "GDG Mumbai",
+                    type: "Conference",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 300,
+                    coverImage: "https://images.unsplash.com/photo-1591115765373-520b7aecd281?auto=format&fit=crop&q=80&w=800"
                 }
             ];
         }
@@ -373,6 +391,57 @@ const sources = [
                     status: "Upcoming",
                     capacity: 10000,
                     coverImage: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "HackMIT 2026",
+                    description: "MIT's premier hackathon. Join students from around the world to build, learn, and innovate over 24 hours.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 150)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 151)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 120)).toISOString(),
+                    link: "https://hackmit.org",
+                    tags: ['Hackathon', 'MIT', 'Innovation'],
+                    location: "Cambridge, MA",
+                    country: "USA",
+                    source: "MIT",
+                    type: "Hackathon",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 1000,
+                    coverImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "CalHacks 13.0",
+                    description: "The world's largest collegiate hackathon at UC Berkeley. Build something legendary at the base of the Campanile.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 180)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 182)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 150)).toISOString(),
+                    link: "https://calhacks.io",
+                    tags: ['Hackathon', 'UC Berkeley', 'Big Tech'],
+                    location: "Berkeley, CA",
+                    country: "USA",
+                    source: "UC Berkeley",
+                    type: "Hackathon",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 2000,
+                    coverImage: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "HackOut 2026",
+                    description: "India's biggest LGBTQ+ focused hackathon. A safe space to build inclusive technology.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 20)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 22)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
+                    link: "https://hackout.io",
+                    tags: ['Hackathon', 'Inclusive', 'Web Dev'],
+                    location: "Bangalore",
+                    country: "India",
+                    source: "Community",
+                    type: "Hackathon",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 300,
+                    coverImage: "https://images.unsplash.com/photo-1542626991-cbc4e32524cc?auto=format&fit=crop&q=80&w=800"
                 }
             ];
         }
@@ -521,6 +590,44 @@ const sources = [
                     workshopFormat: "Bootcamp",
                     skillLevel: "Intermediate",
                     coverImage: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "Full Stack AI Bootcamp",
+                    description: "Learn to build and deploy LLM-powered applications from scratch using Next.js and LangChain.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 40)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 45)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 35)).toISOString(),
+                    link: "https://buildspace.so/",
+                    tags: ['AI', 'LLM', 'Full Stack', 'Next.js'],
+                    location: "Remote",
+                    country: "Global",
+                    source: "Buildspace",
+                    type: "Workshop",
+                    format: "Online",
+                    status: "Upcoming",
+                    capacity: 500,
+                    workshopFormat: "Bootcamp",
+                    skillLevel: "Intermediate",
+                    coverImage: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "Kubernetes for Developers",
+                    description: "Master container orchestration. Learn how to scale and manage your applications in production.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 16)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString(),
+                    link: "https://cncf.io/",
+                    tags: ['Kubernetes', 'Docker', 'DevOps'],
+                    location: "Bangalore",
+                    country: "India",
+                    source: "CNCF",
+                    type: "Workshop",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 100,
+                    workshopFormat: "Hands-on",
+                    skillLevel: "Advanced",
+                    coverImage: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?auto=format&fit=crop&q=80&w=800"
                 }
             ];
         }
@@ -583,6 +690,58 @@ const sources = [
                     status: "Upcoming",
                     capacity: 20,
                     coverImage: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "Amazon SDE Intern 2026",
+                    description: "Work on large-scale distributed systems. Help build the future of e-commerce and cloud computing.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 120)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 210)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 60)).toISOString(),
+                    link: "https://amazon.jobs/students",
+                    tags: ['Internship', 'Distributed Systems', 'Java', 'Paid'],
+                    location: "Hyderabad",
+                    city: "Hyderabad",
+                    country: "India",
+                    source: "Amazon",
+                    type: "Internship",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 200,
+                    coverImage: "https://images.unsplash.com/photo-1521791136064-7986c29596ba?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "Tesla Autopilot Engineering Intern",
+                    description: "Join the team building the future of autonomous driving. Work on computer vision and real-time AI systems.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 150)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 240)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 90)).toISOString(),
+                    link: "https://www.tesla.com/careers/students",
+                    tags: ['Internship', 'AI', 'C++', 'Python', 'Automotive'],
+                    location: "Palo Alto, CA",
+                    country: "USA",
+                    source: "Tesla",
+                    type: "Internship",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 10,
+                    coverImage: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&q=80&w=800"
+                },
+                {
+                    title: "Flipkart APM Intern",
+                    description: "Learn the ropes of product management at India's leading e-commerce giant.",
+                    startDate: new Date(new Date().setDate(new Date().getDate() + 60)).toISOString(),
+                    endDate: new Date(new Date().setDate(new Date().getDate() + 150)).toISOString(),
+                    deadline: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+                    link: "https://www.flipkartcareers.com/",
+                    tags: ['Internship', 'Product Management', 'MBA', 'B.Tech'],
+                    location: "Bangalore",
+                    country: "India",
+                    source: "Flipkart",
+                    type: "Internship",
+                    format: "In-Person",
+                    status: "Upcoming",
+                    capacity: 30,
+                    coverImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800"
                 }
             ];
         }
