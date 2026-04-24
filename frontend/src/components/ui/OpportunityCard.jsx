@@ -36,10 +36,20 @@ const OpportunityCard = ({
     const seed = id ? (parseInt(id.toString().substring(0, 8), 16) % 40) + 10 : 15;
     const liveInterest = (engagement?.clicks || 0) + (engagement?.baseInterest || seed);
 
-    useEffect(() => {
-        // Track a 'view' when the card appears
-        if (id) trackEvent(id, 'view').catch(() => {});
-    }, [id]);
+    // Logic for "Popular Among" demographic
+    const getTopYear = () => {
+        const demo = engagement?.demographics;
+        if (!demo) return (id ? (parseInt(id.toString().substring(1, 4), 16) % 4) + 1 : 2);
+        
+        // Check real data first
+        const years = [demo.year1, demo.year2, demo.year3, demo.year4];
+        const max = Math.max(...years);
+        if (max > 0) return years.indexOf(max) + 1;
+        
+        // Fallback to seed
+        return demo.topYearSeed || 2;
+    };
+    const topYear = getTopYear();
 
     // Application States
     const [isApplying, setIsApplying] = useState(false);
@@ -121,6 +131,11 @@ const OpportunityCard = ({
     const { user } = useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // Track a 'view' when the card appears
+        if (id) trackEvent(id, 'view', user?.profileData?.year).catch(() => {});
+    }, [id, user]);
+
     const handleApply = async (e) => {
         if (e) {
             e.preventDefault();
@@ -128,7 +143,7 @@ const OpportunityCard = ({
         }
 
         // 1. Track the engagement click immediately
-        if (id) trackEvent(id, 'click').catch(() => {});
+        if (id) trackEvent(id, 'click', user?.profileData?.year).catch(() => {});
 
         // 2. Auth Check
         if (!user) {
@@ -204,6 +219,13 @@ const OpportunityCard = ({
                         <Users size={12} className="text-black" />
                         <span className="text-[10px] font-black text-black uppercase tracking-tighter">
                             {liveInterest} INTERESTED
+                        </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 shadow-lg">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span className="text-[9px] font-bold text-white uppercase tracking-wider">
+                            Popular among {topYear}{topYear === 1 ? 'st' : topYear === 2 ? 'nd' : topYear === 3 ? 'rd' : 'th'} years
                         </span>
                     </div>
                 </div>

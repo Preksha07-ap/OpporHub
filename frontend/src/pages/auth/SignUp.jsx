@@ -12,6 +12,7 @@ const SignUp = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [studentYear, setStudentYear] = useState('2'); // Default to 2nd year as requested
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [honeypot, setHoneypot] = useState('');
@@ -37,7 +38,7 @@ const SignUp = () => {
                 email,
                 password,
                 role: backendRole,
-                profileData: {},
+                profileData: role === 'student' ? { year: parseInt(studentYear) } : {},
                 website: honeypot
             });
 
@@ -154,6 +155,32 @@ const SignUp = () => {
                                 />
                             </div>
                         </div>
+
+                                />
+                            </div>
+                        </div>
+
+                        {role === 'student' && (
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-text-main ml-1">Current Year of Study</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {[1, 2, 3, 4].map((y) => (
+                                        <button
+                                            key={y}
+                                            type="button"
+                                            onClick={() => setStudentYear(y.toString())}
+                                            className={`py-2 rounded-xl border-2 font-bold text-sm transition-all ${
+                                                studentYear === y.toString()
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-black/5 bg-white text-text-muted hover:border-black/10'
+                                            }`}
+                                        >
+                                            {y}{y === 1 ? 'st' : y === 2 ? 'nd' : y === 3 ? 'rd' : 'th'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-text-main ml-1">Password</label>

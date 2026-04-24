@@ -162,7 +162,7 @@ const rejectEvent = asyncHandler(async (req, res) => {
 // @route   POST /api/events/:id/track
 // @access  Public
 const trackEngagement = asyncHandler(async (req, res) => {
-  const { type } = req.body; // 'view' or 'click'
+  const { type, studentYear } = req.body; // 'view', 'click' and optional 1, 2, 3, 4
   const event = await Event.findById(req.params.id);
 
   if (!event) {
@@ -171,11 +171,24 @@ const trackEngagement = asyncHandler(async (req, res) => {
   }
 
   if (!event.engagement) {
-    event.engagement = { views: 0, clicks: 0, baseInterest: Math.floor(Math.random() * 50) + 10 };
+    event.engagement = { 
+      views: 0, 
+      clicks: 0, 
+      baseInterest: Math.floor(Math.random() * 50) + 10,
+      demographics: { year1: 0, year2: 0, year3: 0, year4: 0, topYearSeed: Math.floor(Math.random() * 4) + 1 }
+    };
   }
 
   if (type === 'view') event.engagement.views += 1;
   if (type === 'click') event.engagement.clicks += 1;
+
+  // Track demographic if user year is provided
+  if (studentYear && event.engagement.demographics) {
+    const yearKey = `year${studentYear}`;
+    if (event.engagement.demographics.hasOwnProperty(yearKey)) {
+      event.engagement.demographics[yearKey] += 1;
+    }
+  }
 
   await event.save();
   res.json({ success: true, engagement: event.engagement });

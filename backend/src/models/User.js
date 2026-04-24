@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
   // Profile data varies based on role
   profileData: {
     university: String,    // For students
+    year: { type: Number, enum: [1, 2, 3, 4] }, // For students
     organization: String,  // For organizers
   }
 }, {

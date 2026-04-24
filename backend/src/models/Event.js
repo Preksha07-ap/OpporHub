@@ -120,7 +120,14 @@ const eventSchema = new mongoose.Schema({
   engagement: {
     views: { type: Number, default: 0 },
     clicks: { type: Number, default: 0 },
-    baseInterest: { type: Number, default: () => Math.floor(Math.random() * 50) + 10 } // Initial "seed" interest
+    baseInterest: { type: Number, default: () => Math.floor(Math.random() * 50) + 10 }, // Initial "seed" interest
+    demographics: {
+      year1: { type: Number, default: 0 },
+      year2: { type: Number, default: 0 },
+      year3: { type: Number, default: 0 },
+      year4: { type: Number, default: 0 },
+      topYearSeed: { type: Number, default: () => Math.floor(Math.random() * 4) + 1 } // To simulate "Popular among year X"
+    }
   },
 }, {
   timestamps: true,
