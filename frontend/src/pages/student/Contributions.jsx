@@ -70,7 +70,8 @@ const Contributions = () => {
             type: 'contribution',
             image: event.coverImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80',
             link: event.link,
-            engagement: event.engagement
+            engagement: event.engagement,
+            showDemographics: false
         };
     };
 

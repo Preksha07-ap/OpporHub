@@ -26,7 +26,8 @@ const OpportunityCard = ({
     link,
     perks = [],
     outcomes = [],
-    engagement // new prop
+    engagement, // new prop
+    showDemographics = true
 }) => {
     const [isSaved, setIsSaved] = useState(false);
     const [isAddedToCal, setIsAddedToCal] = useState(false);
@@ -222,12 +223,14 @@ const OpportunityCard = ({
                         </span>
                     </div>
                     
-                    <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 shadow-lg">
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        <span className="text-[9px] font-bold text-white uppercase tracking-wider">
-                            Popular among {topYear}{topYear === 1 ? 'st' : topYear === 2 ? 'nd' : topYear === 3 ? 'rd' : 'th'} years
-                        </span>
-                    </div>
+                    {showDemographics && (
+                        <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 shadow-lg">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            <span className="text-[9px] font-bold text-white uppercase tracking-wider">
+                                Popular among {topYear}{topYear === 1 ? 'st' : topYear === 2 ? 'nd' : topYear === 3 ? 'rd' : 'th'} years
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Save for Later Button */}
