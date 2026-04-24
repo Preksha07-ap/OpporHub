@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { getEvents } from '../../api/eventService';
 import { ArrowRight, Search, MapPin, Calendar, Users, Star, ArrowUpRight, Code, Trophy, Target, Zap, Rocket, Globe, BookOpen, Briefcase, Mic, Wrench, GitBranch } from 'lucide-react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useInView } from 'framer-motion';
