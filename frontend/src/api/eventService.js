@@ -38,3 +38,19 @@ export const deleteEvent = async (id) => {
   const { data } = await apiClient.delete(`/events/${id}`);
   return data;
 };
+
+// Admin Endpoints
+export const getPendingEvents = async () => {
+  const { data } = await apiClient.get('/events/admin/pending');
+  return data;
+};
+
+export const approveEvent = async (id) => {
+  const { data } = await apiClient.put(`/events/admin/${id}/approve`);
+  return data;
+};
+
+export const rejectEvent = async (id) => {
+  const { data } = await apiClient.put(`/events/admin/${id}/reject`);
+  return data;
+};

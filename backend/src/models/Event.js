@@ -33,10 +33,62 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a location (or link for online events)'],
   },
+  city: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  country: {
+    type: String,
+  },
+  source: {
+    type: String,
+    default: 'Manual', // Can be 'Eventbrite', 'GDG', etc.
+  },
   type: {
     type: String,
-    enum: ['Hackathon', 'Workshop', 'Seminar', 'Conference', 'Internship', 'Open Source', 'Other'],
+    enum: ['Hackathon', 'Tech Talk', 'Meetup', 'Webinar', 'College Fest', 'Startup Event', 'Workshop', 'Seminar', 'Conference', 'Internship', 'Open Source', 'Other'],
     default: 'Other',
+  },
+  perks: {
+    type: [String],
+    default: [],
+  },
+  participationType: {
+    type: String,
+    enum: ['Solo', 'Team', 'Both'],
+    default: 'Solo',
+  },
+  duration: {
+    type: String,
+    enum: ['Few hours', '1 day', 'Multi-day'],
+    default: 'Few hours',
+  },
+  skillLevel: {
+    type: String,
+    enum: ['Beginner', 'Intermediate', 'Advanced', 'All Levels'],
+  },
+  workshopFormat: {
+    type: String,
+    enum: ['Hands-on', 'Project-based', 'Bootcamp'],
+  },
+  toolsUsed: {
+    type: [String],
+    default: [],
+  },
+  outcomes: {
+    type: [String],
+    default: [],
+  },
+  certificate: {
+    type: Boolean,
+    default: false,
+  },
+  pricing: {
+    type: String,
+    enum: ['Free', 'Paid'],
+    default: 'Free',
   },
   coverImage: {
     type: String, // Cloudinary Image URL
@@ -54,6 +106,11 @@ const eventSchema = new mongoose.Schema({
     type: String,
     enum: ['Upcoming', 'Ongoing', 'Completed', 'Cancelled'],
     default: 'Upcoming',
+  },
+  approvalStatus: {
+    type: String,
+    enum: ['Pending', 'Approved', 'Rejected'],
+    default: 'Approved',
   },
   organizerId: {
     type: mongoose.Schema.Types.ObjectId,

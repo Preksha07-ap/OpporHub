@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, TrendingUp, Users, MapPin, Target, Eye, MousePointerClick, Activity, Calendar, Download, Loader } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { getOrganizerAnalytics } from '../../api/analyticsService';
+import { Navigate } from 'react-router-dom';
 
 const Analytics = () => {
+    const { role } = useAuth();
+
+    if (role !== 'ORGANIZER') {
+        return <Navigate to="/" replace />;
+    }
+
     const [dateRange, setDateRange] = useState('Last 30 days');
     
     // Live Data & Loading

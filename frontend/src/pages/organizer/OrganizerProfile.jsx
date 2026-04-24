@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Building, Globe, Mail, Phone, Upload, AlignLeft, User, Shield, CheckCircle2, Bell, Settings, Save, X } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const ProfileSettings = () => {
+    const { role } = useAuth();
+
+    if (role !== 'ORGANIZER') {
+        return <Navigate to="/" replace />;
+    }
+
     const [formData, setFormData] = useState({
         orgName: 'TechEvents India',
         orgType: 'EdTech Company',

@@ -39,14 +39,22 @@ const Navbar = () => {
   ];
 
   const organizerNavLinks = [
-    { name: 'Dashboard', path: '/org-dashboard' },
     { name: 'My Events', path: '/my-events' },
-    { name: 'Post New Event', path: '/post' },
+    { name: 'Post Opportunity', path: '/post' },
     { name: 'Analytics', path: '/analytics' },
     { name: 'Profile Settings', path: '/profile-settings' },
   ];
 
-  const activeLinks = userRole === 'organizer' ? organizerNavLinks : navLinks;
+  const adminNavLinks = [
+    ...navLinks,
+    { name: 'Approval Queue', path: '/admin-dashboard' },
+  ];
+
+  const activeLinks = userRole === 'admin' 
+    ? adminNavLinks 
+    : userRole === 'organizer' 
+      ? organizerNavLinks 
+      : navLinks;
 
   const isActive = (path) => location.pathname === path;
 
@@ -169,14 +177,7 @@ const Navbar = () => {
                                     className="absolute right-0 mt-3 w-48 clay-card bg-bg-card border border-white/10 py-2 rounded-2xl shadow-xl flex flex-col z-50 overflow-hidden"
                                 >
                                     <Link 
-                                        to={userRole === 'organizer' ? "/profile-settings" : "/dashboard"} 
-                                        onClick={() => setIsProfileOpen(false)}
-                                        className="px-4 py-2.5 text-sm font-semibold text-text-main hover:bg-white/5 hover:text-primary transition-colors flex items-center gap-2"
-                                    >
-                                        <User size={16} /> Profile
-                                    </Link>
-                                    <Link 
-                                        to={userRole === 'organizer' ? "/org-dashboard" : "/dashboard"} 
+                                        to={userRole === 'admin' ? "/admin-dashboard" : userRole === 'organizer' ? "/org-dashboard" : "/dashboard"} 
                                         onClick={() => setIsProfileOpen(false)}
                                         className="px-4 py-2.5 text-sm font-semibold text-text-muted hover:bg-white/5 transition-colors flex items-center gap-2"
                                     >
@@ -194,13 +195,7 @@ const Navbar = () => {
                         </AnimatePresence>
                     </div>
 
-                    {userRole === 'organizer' && (
-                        <Link to="/post">
-                        <button className="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full text-sm font-bold btn-clay transition-all hover:-translate-y-0.5 active:translate-y-0 text-shadow-sm whitespace-nowrap border-none">
-                            Post <span className={`${isScrolled ? 'hidden' : 'hidden lg:inline'}`}>Opportunity</span>
-                        </button>
-                        </Link>
-                    )}
+
                 </>
             ) : (
                 <>
@@ -261,14 +256,7 @@ const Navbar = () => {
                         </div>
                     )}
                     <Link
-                        to={userRole === 'organizer' ? "/profile-settings" : "/dashboard"}
-                        onClick={() => setIsOpen(false)}
-                        className="w-full text-left px-4 py-3 rounded-xl border border-white/5 text-text-main font-bold hover:bg-white/5 flex items-center gap-3"
-                    >
-                        <User size={18} /> Profile ({user?.name || 'User'})
-                    </Link>
-                    <Link
-                        to={userRole === 'organizer' ? "/org-dashboard" : "/dashboard"}
+                        to={userRole === 'admin' ? "/admin-dashboard" : userRole === 'organizer' ? "/org-dashboard" : "/dashboard"}
                         onClick={() => setIsOpen(false)}
                         className="w-full text-left px-4 py-3 rounded-xl border border-white/5 text-text-main font-bold hover:bg-white/5 flex items-center gap-3"
                     >
@@ -280,13 +268,7 @@ const Navbar = () => {
                     >
                         <LogOut size={18} /> Logout
                     </button>
-                    {userRole === 'organizer' && (
-                        <Link to="/post" className="w-full mt-2">
-                            <button className="w-full py-3 bg-primary text-white rounded-xl font-bold btn-clay">
-                            Post Opportunity
-                            </button>
-                        </Link>
-                    )}
+
                   </>
               ) : (
                   <>

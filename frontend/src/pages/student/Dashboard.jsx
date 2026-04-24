@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { User, Bookmark, Briefcase, Settings, LogOut, Search, Clock, CheckCircle, Trophy, Code, Star, Zap, Calendar, Bell, BellRing, CalendarPlus, Users, Video, Sparkles, History, Trash2, ExternalLink, MapPin, Camera, ShieldCheck, Lock, Mail, RefreshCw, BookOpen, Award, TrendingUp, Github, Plus, Terminal } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import OpportunityCard from '../../components/ui/OpportunityCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getMyRegistrations, cancelRegistration } from '../../api/registrationService';
 import { updateProfile } from '../../api/authService';
 
 const Dashboard = () => {
+    const { user, role, logout } = useAuth();
+    const navigate = useNavigate();
+
+    // Role-based redirection
+    if (role === 'ORGANIZER') {
+        return <Navigate to="/org-dashboard" replace />;
+    }
+
     const [activeTab, setActiveTab] = useState('applications'); // 'applications', 'saved', 'profile', 'tracker', 'calendar', 'mentorship'
     const [reminders, setReminders] = useState({ 1: true, 2: false });
     const [applicationFilter, setApplicationFilter] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('appliedDate');
-
-    // Profile State
-    const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
-    const [profileForm, setProfileForm] = useState({ name: userInfo.name || '', password: '', newPassword: '' });
+    const [profileForm, setProfileForm] = useState({ name: user?.name || '', password: '', newPassword: '' });
     const [profileLoad, setProfileLoad] = useState(false);
 
     const handleProfileUpdate = async (e) => {
@@ -83,62 +89,48 @@ const Dashboard = () => {
         'Cancelled': applicationsList.filter(a => a.status === 'Cancelled').length
     };
 
-    const [savedList, setSavedList] = useState([
-        {
-            id: 3,
-            title: "React India 2026",
-            org: "React.js Comm",
-            date: "Sep 2026",
-            location: "Goa",
-            tags: ["Frontend", "React"],
-            type: "conference",
-            deadline: "Aug 15, 2026"
-        },
-        {
-            id: 4,
-            title: "Web3 Open Source",
-            org: "Ethereum Foundation",
-            date: "Ongoing",
-            location: "Remote",
-            tags: ["Blockchain", "Open Source"],
-            type: "contribution",
-            deadline: "No Deadline"
+    const [savedList, setSavedList] = useState([]);
+
+    React.useEffect(() => {
+        if (activeTab === 'saved') {
+            try {
+                const items = JSON.parse(localStorage.getItem('opporhub_saved')) || [];
+                // Filter out any old items that were saved as plain strings
+                setSavedList(items.filter(i => typeof i === 'object'));
+            } catch (err) {
+                console.error('Failed to load saved items', err);
+            }
         }
-    ]);
+    }, [activeTab]);
 
     const handleRemoveSaved = (id) => {
-        setSavedList(savedList.filter(item => item.id !== id));
+        const updated = savedList.filter(item => item.id !== id);
+        setSavedList(updated);
+        localStorage.setItem('opporhub_saved', JSON.stringify(updated));
     };
 
-    const mockUpcomingEvents = [
-        {
-            id: 1,
-            title: "Web3 Open Source Hackathon",
-            type: "hackathon",
-            date: "Nov 15, 2026",
-            time: "10:00 AM IST",
-            location: "Remote",
-            daysLeft: 3
-        },
-        {
-            id: 2,
-            title: "React Masterclass Workshop",
-            type: "workshop",
-            date: "Dec 02, 2026",
-            time: "05:00 PM IST",
-            location: "Bangalore (Hybrid)",
-            daysLeft: 20
-        }
-    ];
+    const upcomingEvents = applicationsList
+        .filter(app => app.status === 'Registered')
+        .map(app => {
+            const eventDate = new Date(app.date.split(' - ')[0]);
+            const now = new Date();
+            const daysLeft = Math.ceil((eventDate - now) / (1000 * 60 * 60 * 24));
+            
+            return {
+                id: app.id,
+                title: app.title,
+                type: app.type,
+                date: new Date(eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                time: "TBD",
+                location: app.location,
+                daysLeft: daysLeft
+            };
+        })
+        .filter(event => event.daysLeft >= 0)
+        .slice(0, 5); // Show top 5 upcoming
 
-    const mockSuggestedMentors = [
-        { id: 1, name: "Sarah Chen", role: "Senior SWE", company: "Google", match: "98%", available: "Next Tuesday" },
-        { id: 2, name: "Rahul Sharma", role: "Product Manager", company: "Microsoft", match: "92%", available: "Tomorrow" }
-    ];
-
-    const mockPastMeetings = [
-        { id: 1, mentor: "David Kim", date: "Oct 15, 2026", topic: "Resume Review & Frontend Prep", duration: "45 mins" }
-    ];
+    const mockSuggestedMentors = [];
+    const mockPastMeetings = [];
 
     const toggleReminder = (id) => {
         setReminders(prev => ({ ...prev, [id]: !prev[id] }));
@@ -160,10 +152,10 @@ const Dashboard = () => {
             <div className="w-full md:w-64 shrink-0 space-y-2">
                 <div className="clay-card p-6 bg-surface-light border border-white/5 mb-6 text-center">
                     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-sage mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-inner uppercase">
-                        {userInfo?.name ? userInfo.name.charAt(0) : 'U'}
+                        {user?.name ? user.name.charAt(0) : 'U'}
                     </div>
-                    <h2 className="text-xl font-bold text-text-main font-heading">{userInfo?.name || 'Student'}</h2>
-                    <p className="text-sm text-text-muted mb-4">{userInfo?.profileData?.university || 'OpporHub Member'}</p>
+                    <h2 className="text-xl font-bold text-text-main font-heading">{user?.name || 'Student'}</h2>
+                    <p className="text-sm text-text-muted mb-4">{user?.profileData?.university || 'OpporHub Member'}</p>
                     <div className="text-xs font-semibold py-1 px-3 bg-primary/20 text-primary rounded-full inline-block border border-primary/20">
                         Top 5% Applicant
                     </div>
@@ -385,9 +377,14 @@ const Dashboard = () => {
                                             >
                                                 <Trash2 size={16} /> Remove
                                             </button>
-                                            <button className="w-full md:w-auto text-sm font-bold bg-primary text-white border border-primary/50 hover:bg-primary-hover px-6 py-3 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                                            <a 
+                                                href={item.link || "#"}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="w-full md:w-auto text-sm font-bold bg-primary text-white border border-primary/50 hover:bg-primary-hover px-6 py-3 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                                            >
                                                 <ExternalLink size={16} /> Apply Now
-                                            </button>
+                                            </a>
                                         </div>
                                     </div>
                                 ))}
@@ -439,7 +436,7 @@ const Dashboard = () => {
                                             <div className="flex justify-between items-center ml-1">
                                                 <label className="text-sm font-bold text-text-main tracking-wide">Email Address</label>
                                             </div>
-                                            <input type="email" disabled value={userInfo.email || ''} className="w-full px-4 py-3 rounded-xl border border-white/5 bg-surface/50 text-text-muted transition-all font-medium cursor-not-allowed opacity-70" />
+                                            <input type="email" disabled value={user?.email || ''} className="w-full px-4 py-3 rounded-xl border border-white/5 bg-surface/50 text-text-muted transition-all font-medium cursor-not-allowed opacity-70" />
                                         </div>
 
                                         <div className="space-y-2">
@@ -720,7 +717,14 @@ const Dashboard = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {mockUpcomingEvents.map(event => (
+                            {upcomingEvents.length === 0 ? (
+                                <div className="clay-card p-12 bg-bg-card border border-white/5 flex flex-col items-center justify-center text-center">
+                                    <Calendar size={48} className="text-white/10 mb-4" />
+                                    <h3 className="text-xl font-bold text-text-main mb-2">No Upcoming Events</h3>
+                                    <p className="text-text-muted mb-6">Register for events to see them on your calendar.</p>
+                                </div>
+                            ) : (
+                                upcomingEvents.map(event => (
                                 <div key={event.id} className="clay-card p-6 bg-bg-card border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-primary/30 transition-colors">
                                     <div className="flex-grow flex items-start gap-4">
                                         <div className="w-14 h-14 shrink-0 rounded-2xl bg-surface border border-white/10 flex flex-col items-center justify-center overflow-hidden">
@@ -762,7 +766,7 @@ const Dashboard = () => {
                                         </a>
                                     </div>
                                 </div>
-                            ))}
+                            )))}
                         </div>
                     </motion.div>
                 )}

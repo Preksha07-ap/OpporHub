@@ -36,7 +36,7 @@ const createEvent = asyncHandler(async (req, res) => {
 // @access  Public
 const getEvents = asyncHandler(async (req, res) => {
   // Add filtering as needed (e.g., status: 'Upcoming')
-  const events = await Event.find({}).populate('organizerId', 'name profileData');
+  const events = await Event.find({ approvalStatus: 'Approved' }).populate('organizerId', 'name profileData');
   res.json(events);
 });
 
@@ -114,11 +114,58 @@ const getMyEvents = asyncHandler(async (req, res) => {
   res.json(events);
 });
 
+// @desc    Get pending events for admin
+// @route   GET /api/events/admin/pending
+// @access  Private/Admin
+const getPendingEvents = asyncHandler(async (req, res) => {
+  const events = await Event.find({ approvalStatus: 'Pending' }).populate('organizerId', 'name profileData');
+  res.json(events);
+});
+
+// @desc    Approve event
+// @route   PUT /api/events/admin/:id/approve
+// @access  Private/Admin
+const approveEvent = asyncHandler(async (req, res) => {
+  const event = await Event.findByIdAndUpdate(
+    req.params.id,
+    { approvalStatus: 'Approved' },
+    { new: true, runValidators: true }
+  );
+
+  if (!event) {
+    res.status(404);
+    throw new Error('Event not found');
+  }
+
+  res.json(event);
+});
+
+// @desc    Reject event
+// @route   PUT /api/events/admin/:id/reject
+// @access  Private/Admin
+const rejectEvent = asyncHandler(async (req, res) => {
+  const event = await Event.findByIdAndUpdate(
+    req.params.id,
+    { approvalStatus: 'Rejected' },
+    { new: true, runValidators: true }
+  );
+
+  if (!event) {
+    res.status(404);
+    throw new Error('Event not found');
+  }
+
+  res.json(event);
+});
+
 module.exports = {
   createEvent,
   getEvents,
   getEventById,
   updateEvent,
   deleteEvent,
-  getMyEvents
+  getMyEvents,
+  getPendingEvents,
+  approveEvent,
+  rejectEvent
 };

@@ -6,7 +6,10 @@ const {
   getEventById,
   updateEvent,
   deleteEvent,
-  getMyEvents
+  getMyEvents,
+  getPendingEvents,
+  approveEvent,
+  rejectEvent
 } = require('../controllers/eventController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const upload = require('../config/cloudinary');
@@ -16,6 +19,15 @@ router.route('/')
   .post(protect, authorize('ORGANIZER'), upload.single('coverImage'), createEvent);
 router.route('/organizer/my')
   .get(protect, authorize('ORGANIZER'), getMyEvents);
+
+router.route('/admin/pending')
+  .get(protect, authorize('ADMIN'), getPendingEvents);
+
+router.route('/admin/:id/approve')
+  .put(protect, authorize('ADMIN'), approveEvent);
+
+router.route('/admin/:id/reject')
+  .put(protect, authorize('ADMIN'), rejectEvent);
 
 router.route('/:id')
   .get(getEventById)

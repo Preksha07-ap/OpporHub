@@ -1,12 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import OpportunityCard from '../../components/ui/OpportunityCard';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Filter, ChevronDown } from 'lucide-react';
 import { getEvents } from '../../api/eventService';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const FILTER_OPTIONS = {
+    type: ['All', 'GitHub Issues', 'Open Source Programs']
+};
 
 const Contributions = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Filter State
+    const [filters, setFilters] = useState({
+        type: 'All'
+    });
+    
+    const [activeDropdown, setActiveDropdown] = useState(null);
+    const filterBarRef = React.useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (filterBarRef.current && !filterBarRef.current.contains(event.target)) {
+                setActiveDropdown(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -25,26 +48,101 @@ const Contributions = () => {
         fetchEvents();
     }, []);
 
-    const contributors = [
-        { name: "Aditi S.", role: "GSoC @ TensorFlow", img: "https://i.pravatar.cc/150?u=aditi" },
-        { name: "Rahul K.", role: "LFX Mentee", img: "https://i.pravatar.cc/150?u=rahul" },
-        { name: "Sarah J.", role: "MLH Fellow", img: "https://i.pravatar.cc/150?u=sarah" },
-        { name: "Mike T.", role: "Maintainer", img: "https://i.pravatar.cc/150?u=mike" },
-    ];
-
     const mapEventProps = (event) => {
-        const startDate = event.startDate ? new Date(event.startDate).toLocaleDateString() : 'Rolling';
+        const dateString = event.startDate;
+        let formattedDate = 'Rolling';
+        
+        if (dateString) {
+            if (typeof dateString === 'string' && dateString.includes('T')) {
+                formattedDate = new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            } else {
+                formattedDate = dateString;
+            }
+        }
+
         return {
             id: event._id,
             title: event.title,
             org: event.organizerId?.name || 'Unknown Organizer',
-            date: startDate,
+            date: formattedDate,
             location: event.location || 'Remote',
             tags: event.tags || [],
             type: 'contribution',
-            image: event.coverImage,
+            image: event.coverImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80',
             link: event.link
         };
+    };
+
+    const isFiltering = Object.values(filters).some(val => val !== 'All');
+
+    const filteredData = useMemo(() => {
+        return events.filter(ev => {
+            const tags = (ev.tags || []).map(t => t.toLowerCase());
+            const link = (ev.link || '').toLowerCase();
+            
+            if (filters.type === 'GitHub Issues') {
+                const isGithub = link.includes('github.com') || tags.includes('good first issue') || tags.includes('contribution');
+                if (!isGithub) return false;
+            }
+
+            if (filters.type === 'Open Source Programs') {
+                const isProgram = tags.includes('fellowship') || tags.includes('mentorship') || (!link.includes('github.com') && tags.includes('open source'));
+                if (!isProgram) return false;
+            }
+
+            return true;
+        });
+    }, [events, filters]);
+
+    const FilterDropdown = ({ title, category }) => {
+        const isOpen = activeDropdown === category;
+        const currentVal = filters[category];
+        const isModified = currentVal !== 'All';
+
+        return (
+            <div className="relative">
+                <button
+                    onClick={() => setActiveDropdown(isOpen ? null : category)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
+                        isModified 
+                            ? 'bg-primary/20 border-primary text-primary shadow-sm' 
+                            : 'bg-black/40 border-white/10 text-text-muted hover:text-text-main hover:bg-white/5 backdrop-blur-sm'
+                    }`}
+                >
+                    {isModified ? currentVal : title}
+                    <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute top-full left-0 mt-2 w-48 bg-[#0a0f0a] backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.8)] overflow-hidden z-[100] py-1"
+                        >
+                            {FILTER_OPTIONS[category].map(option => (
+                                <button
+                                    key={option}
+                                    onClick={() => {
+                                        setFilters(prev => ({ ...prev, [category]: option }));
+                                        setActiveDropdown(null);
+                                    }}
+                                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                                        filters[category] === option
+                                            ? 'bg-primary text-white font-bold'
+                                            : 'text-text-muted hover:bg-white/5 hover:text-text-main'
+                                    }`}
+                                >
+                                    {option}
+                                </button>
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+        );
     };
 
     return (
@@ -54,23 +152,39 @@ const Contributions = () => {
                     {/* Decorative Glow */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px]" />
 
-                    <div className="relative z-10">
+                    <div className="relative z-10 w-full">
                         <h1 className="text-4xl font-heading font-bold text-text-main mb-4">Open Source Contributions</h1>
-                        <p className="text-text-muted text-lg max-w-xl leading-relaxed">
-                            Contribute to real-world projects, learn from mentors, and get paid.
-                            These programs are the best way to kickstart your open-source journey.
+                        <p className="text-text-muted text-lg max-w-xl leading-relaxed mb-8">
+                            Start small by tackling realtime "Good First Issues", or explore massive tier-1 official programs offering direct stipends and full-time outcomes!
                         </p>
                     </div>
-                    <button className="bg-primary hover:bg-primary-hover text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-105 relative z-10">
-                        Start Contributing
-                    </button>
+                </div>
+            </div>
+
+            <div className="mb-12 relative z-[100]" ref={filterBarRef}>
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2 text-text-muted bg-white/5 p-2 rounded-xl border border-white/10">
+                        <Filter size={18} />
+                        <span className="text-sm font-bold mr-2 hidden md:inline">Filters:</span>
+                    </div>
+                    
+                    <FilterDropdown title="Type" category="type" />
+                    
+                    {isFiltering && (
+                        <button
+                            onClick={() => setFilters({ type: 'All' })}
+                            className="text-xs font-bold text-text-muted hover:text-white transition-colors underline ml-2"
+                        >
+                            Clear Filters
+                        </button>
+                    )}
                 </div>
             </div>
 
             {loading ? (
                 <div className="flex flex-col items-center justify-center p-20 text-primary">
                     <Loader2 size={48} className="animate-spin mb-4" />
-                    <p className="text-text-muted font-medium">Fetching open source programs...</p>
+                    <p className="text-text-muted font-medium">Fetching realtime open source opportunities...</p>
                 </div>
             ) : error ? (
                 <div className="p-8 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex flex-col items-center justify-center text-center mb-16">
@@ -80,36 +194,30 @@ const Contributions = () => {
                 </div>
             ) : (
                 <div className="mb-16">
-                    {events.length === 0 ? (
-                        <div className="text-center py-20 text-text-muted">
-                            <h3 className="text-2xl font-bold mb-2">No programs found</h3>
-                            <p>Check back later for new open source opportunities!</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {events.map(prog => (
-                                <OpportunityCard key={prog._id} {...mapEventProps(prog)} />
-                            ))}
-                        </div>
-                    )}
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={JSON.stringify(filters)}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {filteredData.length === 0 ? (
+                                <div className="text-center py-20 text-text-muted bg-white/5 rounded-2xl border border-white/5">
+                                    <h3 className="text-2xl font-bold mb-2">No opportunities found</h3>
+                                    <p>Check back later or adjust your filters!</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {filteredData.map(prog => (
+                                        <OpportunityCard key={prog._id} {...mapEventProps(prog)} />
+                                    ))}
+                                </div>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             )}
-
-            {/* Past Contributors Section */}
-            <section>
-                <h2 className="text-2xl font-heading font-bold text-text-main mb-6">Past Contributors & Mentors</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    {contributors.map((person, idx) => (
-                        <div key={idx} className="clay-card p-4 rounded-xl border border-white/5 bg-bg-card flex items-center gap-4 hover:bg-white/5 transition-colors shadow-sm">
-                            <img src={person.img} alt={person.name} className="w-12 h-12 rounded-full border-2 border-white/10" />
-                            <div>
-                                <h4 className="font-bold text-text-main">{person.name}</h4>
-                                <p className="text-xs text-text-muted font-medium">{person.role}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
         </div>
     );
 };

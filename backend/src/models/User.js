@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['STUDENT', 'ORGANIZER'],
+    enum: ['STUDENT', 'ORGANIZER', 'ADMIN'],
     default: 'STUDENT',
   },
   // Profile data varies based on role

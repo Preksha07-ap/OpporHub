@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
-import { Calendar, MapPin, ExternalLink, Edit, Share2, List, Trash2, Search, Loader } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { List, Search, Loader, Edit, Trash2, Share2, ExternalLink } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { getMyEvents, deleteEvent } from '../../api/eventService';
 
 const MyEvents = () => {
-    const userRole = localStorage.getItem('userRole');
-    if (userRole !== 'organizer') {
+    const { role } = useAuth();
+    
+    if (role !== 'ORGANIZER') {
         return <Navigate to="/" replace />;
     }
 

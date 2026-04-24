@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Calendar, MapPin, Link as LinkIcon, Tag, Type, AlignLeft, CheckCircle2, ArrowRight, Upload, Sparkles, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { createEvent } from '../../api/eventService';
 
 const PostOpportunity = () => {
+    const { role } = useAuth();
     const navigate = useNavigate();
+
+    if (role !== 'ORGANIZER') {
+        return <Navigate to="/" replace />;
+    }
+
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
@@ -19,12 +26,24 @@ const PostOpportunity = () => {
         deadline: '',
         link: '',
         tags: '',
+        perks: '',
+        participationType: 'Solo',
+        duration: 'Few hours',
+        skillLevel: 'Beginner',
+        workshopFormat: 'Hands-on',
+        toolsUsed: '',
+        outcomes: '',
+        certificate: false,
+        pricing: 'Free',
         image: null
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({ 
+            ...prev, 
+            [name]: type === 'checkbox' ? checked : value 
+        }));
     };
 
     const handleFileChange = (e) => {
@@ -49,6 +68,19 @@ const PostOpportunity = () => {
             data.append('deadline', formData.deadline);
             data.append('link', formData.link);
             data.append('tags', formData.tags);
+            data.append('perks', formData.perks);
+            data.append('participationType', formData.participationType);
+            data.append('duration', formData.duration);
+            
+            if (formData.type === 'Workshop') {
+                data.append('skillLevel', formData.skillLevel);
+                data.append('workshopFormat', formData.workshopFormat);
+                data.append('toolsUsed', formData.toolsUsed);
+                data.append('outcomes', formData.outcomes);
+                data.append('certificate', formData.certificate);
+                data.append('pricing', formData.pricing);
+            }
+
             if (formData.image) {
                 data.append('coverImage', formData.image);
             }
@@ -115,7 +147,7 @@ const PostOpportunity = () => {
         <div className="container mx-auto px-4 lg:px-8 py-12 mt-16 max-w-5xl min-h-screen">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center md:text-left">
                 <h1 className="text-4xl md:text-5xl font-heading font-black text-text-main mb-3 flex items-center justify-center md:justify-start gap-3">
-                    <Sparkles className="text-terracotta" size={36} /> Post New Event
+                    <Sparkles className="text-terracotta" size={36} /> Post Opportunity
                 </h1>
                 <p className="text-text-muted text-lg font-medium">Create a high-impact opportunity. Reach the right students.</p>
             </motion.div>
@@ -160,11 +192,18 @@ const PostOpportunity = () => {
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium appearance-none hover:border-white/20"
                                 >
-                                    <option value="Conference" className="bg-[#1a2a1a]">Conference</option>
                                     <option value="Hackathon" className="bg-[#1a2a1a]">Hackathon</option>
+                                    <option value="Tech Talk" className="bg-[#1a2a1a]">Tech Talk</option>
+                                    <option value="Meetup" className="bg-[#1a2a1a]">Meetup</option>
+                                    <option value="Webinar" className="bg-[#1a2a1a]">Webinar</option>
+                                    <option value="College Fest" className="bg-[#1a2a1a]">College Fest</option>
+                                    <option value="Startup Event" className="bg-[#1a2a1a]">Startup Event</option>
+                                    <option value="Conference" className="bg-[#1a2a1a]">Conference</option>
                                     <option value="Workshop" className="bg-[#1a2a1a]">Workshop</option>
+                                    <option value="Seminar" className="bg-[#1a2a1a]">Seminar</option>
                                     <option value="Internship" className="bg-[#1a2a1a]">Internship</option>
                                     <option value="Open Source" className="bg-[#1a2a1a]">Open Source</option>
+                                    <option value="Other" className="bg-[#1a2a1a]">Other</option>
                                 </select>
                             </div>
                         </div>
@@ -303,6 +342,106 @@ const PostOpportunity = () => {
                             </div>
 
                             <div className="space-y-2">
+                                <label className="text-sm font-bold text-text-muted ml-1">Perks <span className="text-white/30 font-normal">(Comma separated)</span></label>
+                                <div className="relative">
+                                    <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={20} />
+                                    <input 
+                                        type="text" 
+                                        name="perks"
+                                        value={formData.perks}
+                                        onChange={handleChange}
+                                        placeholder='e.g., "Cash Prize, Certificate, Swag"' 
+                                        className="w-full pl-12 pr-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium placeholder:text-white/20"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-text-muted ml-1">Participation Type <span className="text-rose-500">*</span></label>
+                                <select 
+                                    name="participationType"
+                                    value={formData.participationType}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium appearance-none hover:border-white/20"
+                                >
+                                    <option value="Solo" className="bg-[#1a2a1a]">Solo</option>
+                                    <option value="Team" className="bg-[#1a2a1a]">Team</option>
+                                    <option value="Both" className="bg-[#1a2a1a]">Both</option>
+                                </select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-text-muted ml-1">Duration <span className="text-rose-500">*</span></label>
+                                <select 
+                                    name="duration"
+                                    value={formData.duration}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium appearance-none hover:border-white/20"
+                                >
+                                    <option value="Few hours" className="bg-[#1a2a1a]">Few hours</option>
+                                    <option value="1 day" className="bg-[#1a2a1a]">1 day</option>
+                                    <option value="Multi-day" className="bg-[#1a2a1a]">Multi-day</option>
+                                </select>
+                            </div>
+
+                            {/* CONDITIONAL WORKSHOP FIELDS */}
+                            {formData.type === 'Workshop' && (
+                                <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl bg-amber-900/10 border border-amber-500/20"
+                                >
+                                    <div className="col-span-1 md:col-span-2">
+                                        <h4 className="text-amber-400 font-bold mb-2">Workshop Specifics</h4>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-text-muted ml-1">Skill Level</label>
+                                        <select name="skillLevel" value={formData.skillLevel} onChange={handleChange} className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-amber-500/50 appearance-none">
+                                            <option value="Beginner" className="bg-[#1a2a1a]">Beginner</option>
+                                            <option value="Intermediate" className="bg-[#1a2a1a]">Intermediate</option>
+                                            <option value="Advanced" className="bg-[#1a2a1a]">Advanced</option>
+                                            <option value="All Levels" className="bg-[#1a2a1a]">All Levels</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-text-muted ml-1">Format</label>
+                                        <select name="workshopFormat" value={formData.workshopFormat} onChange={handleChange} className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-amber-500/50 appearance-none">
+                                            <option value="Hands-on" className="bg-[#1a2a1a]">Hands-on</option>
+                                            <option value="Project-based" className="bg-[#1a2a1a]">Project-based</option>
+                                            <option value="Bootcamp" className="bg-[#1a2a1a]">Bootcamp</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-text-muted ml-1">Tools Used <span className="font-normal">(Comma separated)</span></label>
+                                        <input type="text" name="toolsUsed" value={formData.toolsUsed} onChange={handleChange} placeholder="e.g., React, Node, AWS" className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-amber-500/50 placeholder:text-white/20"/>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-text-muted ml-1">Outcomes <span className="font-normal">(Comma separated)</span></label>
+                                        <input type="text" name="outcomes" value={formData.outcomes} onChange={handleChange} placeholder="e.g., Build a Chatbot, Deploy an API" className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-amber-500/50 placeholder:text-white/20"/>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-text-muted ml-1">Pricing</label>
+                                        <select name="pricing" value={formData.pricing} onChange={handleChange} className="w-full px-4 py-3 bg-bg-card border border-white/10 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-amber-500/50 appearance-none">
+                                            <option value="Free" className="bg-[#1a2a1a]">Free</option>
+                                            <option value="Paid" className="bg-[#1a2a1a]">Paid</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-2 flex items-center pt-8">
+                                        <label className="flex items-center gap-3 cursor-pointer">
+                                            <input type="checkbox" name="certificate" checked={formData.certificate} onChange={handleChange} className="w-5 h-5 rounded border-white/10 bg-bg-card text-amber-500 focus:ring-amber-500/50"/>
+                                            <span className="text-sm font-bold text-text-main">Provides Certificate</span>
+                                        </label>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            <div className="space-y-2 col-span-1 md:col-span-2">
                                 <label className="text-sm font-bold text-text-muted ml-1 flex items-center justify-between">
                                     <span>Event Image / Cover <span className="text-white/30 font-normal">(Optional)</span></span>
                                     {formData.image && <CheckCircle2 size={16} className="text-emerald-400" />}

@@ -87,14 +87,7 @@ const Home = () => {
         }
     ];
 
-    const fallbackTrendingItems = [
-        { title: "React India 2026", type: "Conference", loc: "Goa, India", date: "Sep 2026", color: "text-purple-300 bg-purple-900/30", live: true, image: conferenceImg },
-        { title: "Smart India Hackathon", type: "Hackathon", loc: "Hybrid", date: "Oct 2026", color: "text-rose-300 bg-rose-900/30", image: hackathonImg },
-        { title: "Google Summer of Code", type: "Open Source", loc: "Remote", date: "Summer 2027", color: "text-emerald-300 bg-emerald-900/30", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=2070" },
-        { title: "AWS Community Day", type: "Conference", loc: "Bangalore", date: "Nov 2026", color: "text-purple-300 bg-purple-900/30", image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=2070" },
-    ];
-
-    const [trendingItems, setTrendingItems] = useState(fallbackTrendingItems);
+    const [trendingItems, setTrendingItems] = useState([]);
     const [stats, setStats] = useState({ opportunities: 0, partners: 0, states: 0 });
 
     useEffect(() => {
@@ -115,7 +108,7 @@ const Home = () => {
                             loc: ev.location || 'Remote',
                             date: ev.startDate ? new Date(ev.startDate).toLocaleDateString() : 'TBA',
                             color: colors[idx % colors.length],
-                            image: ev.coverImage || fallbackTrendingItems[0].image
+                            image: ev.coverImage || "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80"
                         };
                     });
                     setTrendingItems(formatted.slice(0, 6)); // Top 6 latest

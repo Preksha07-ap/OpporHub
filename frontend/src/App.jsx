@@ -17,6 +17,7 @@ import MyEvents from './pages/organizer/MyEvents';
 import Analytics from './pages/organizer/Analytics';
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 import PostEvent from './pages/organizer/PostEvent';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="my-events" element={<MyEvents />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="profile-settings" element={<OrganizerProfile />} />
+            <Route path="admin-dashboard" element={<AdminDashboard />} />
           </Route>
         </Routes>
       </Router>

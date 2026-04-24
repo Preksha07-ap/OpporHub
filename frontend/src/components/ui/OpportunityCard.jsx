@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { registerForEvent } from '../../api/registrationService';
-import { Calendar, MapPin, ExternalLink, Clock, Bookmark, CalendarPlus, Check } from 'lucide-react';
+import { Calendar, MapPin, ExternalLink, Clock, Bookmark, BookmarkCheck, CalendarPlus, Check } from 'lucide-react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -19,7 +19,9 @@ const OpportunityCard = ({
     type = 'default',
     image,
     price,
-    link
+    link,
+    perks = [],
+    outcomes = []
 }) => {
     const [isSaved, setIsSaved] = useState(false);
     const [isAddedToCal, setIsAddedToCal] = useState(false);
@@ -28,16 +30,77 @@ const OpportunityCard = ({
     const [isApplying, setIsApplying] = useState(false);
     const [applyStatus, setApplyStatus] = useState(null); // null, 'success', 'error'
 
+    // Load saved state from localStorage on mount
+    useEffect(() => {
+        try {
+            const savedItems = JSON.parse(localStorage.getItem('opporhub_saved')) || [];
+            if (savedItems.some(item => (typeof item === 'object' ? item.id === id : item === id))) {
+                setIsSaved(true);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }, [id]);
+
     const handleSave = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsSaved(!isSaved);
+        
+        try {
+            let savedItems = JSON.parse(localStorage.getItem('opporhub_saved')) || [];
+            if (isSaved) {
+                // Remove from saved
+                savedItems = savedItems.filter(item => (typeof item === 'object' ? item.id !== id : item !== id));
+            } else {
+                // Add to saved as a full object so the dashboard can render it immediately
+                if (!savedItems.some(i => (typeof i === 'object' ? i.id === id : i === id))) {
+                    savedItems.push({ id, title, org, date, location, type, link, image });
+                }
+            }
+            localStorage.setItem('opporhub_saved', JSON.stringify(savedItems));
+            setIsSaved(!isSaved);
+        } catch (err) {
+            console.error("Failed to save to localStorage", err);
+        }
     };
 
     const handleAddToCal = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsAddedToCal(!isAddedToCal);
+        
+        // Generate Google Calendar Link
+        const text = encodeURIComponent(title || "OpportunityHub Event");
+        const details = encodeURIComponent(`Link: ${link || "Not provided"}\nOrganization: ${org || "Not provided"}`);
+        const loc = encodeURIComponent(location || "Remote");
+        
+        // Use a generic date if none is perfectly parsable, otherwise try to parse
+        let dates = "";
+        try {
+            // Attempt to parse 'Rolling' or 'Oct 24, 2026' into a valid Date
+            const d = new Date(date);
+            if (!isNaN(d.getTime())) {
+                const start = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+                // Add 1 hour for end time
+                d.setHours(d.getHours() + 1);
+                const end = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+                dates = `&dates=${start}/${end}`;
+            } else {
+                // Fallback date: Tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const start = tomorrow.toISOString().replace(/-|:|\.\d\d\d/g, "");
+                tomorrow.setHours(tomorrow.getHours() + 1);
+                const end = tomorrow.toISOString().replace(/-|:|\.\d\d\d/g, "");
+                dates = `&dates=${start}/${end}`;
+            }
+        } catch (err) {
+            console.error(err);
+        }
+
+        const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}&location=${loc}${dates}`;
+        
+        window.open(calUrl, '_blank');
+        setIsAddedToCal(true);
     };
 
     const handleApply = async (e) => {
@@ -45,18 +108,13 @@ const OpportunityCard = ({
         e.stopPropagation();
         if (applyStatus === 'success' || applyStatus === 'error') return;
 
-        // Open external registration smoothly and synchronously to avoid popup blockers
-        if (link) {
-            window.open(link, '_blank');
-        }
-
         try {
             setIsApplying(true);
             await registerForEvent(id);
             setApplyStatus('success');
         } catch (err) {
             console.error('Registration failed:', err);
-            // If the user isn't logged in, it will fail internally but we still let them visit the off-site link!
+            // If the user isn't logged in, it will fail internally
             setApplyStatus('error');
         } finally {
             setIsApplying(false);
@@ -91,10 +149,10 @@ const OpportunityCard = ({
                 {/* Save for Later Button */}
                 <button 
                     onClick={handleSave}
-                    className="absolute top-3 left-3 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 hover:bg-black/60 transition-colors shadow-lg group"
-                    title="Save for Later"
+                    className={`absolute top-3 left-3 z-20 w-8 h-8 rounded-full backdrop-blur-md flex items-center justify-center border transition-all shadow-lg group ${isSaved ? 'bg-primary/90 border-primary shadow-[0_0_15px_rgba(138,154,91,0.5)]' : 'bg-black/40 border-white/10 hover:bg-black/60'}`}
+                    title={isSaved ? "Saved" : "Save for Later"}
                 >
-                    <Bookmark size={16} className={isSaved ? "fill-primary text-primary" : "text-white group-hover:text-primary transition-colors"} />
+                    {isSaved ? <BookmarkCheck size={16} className="text-white" /> : <Bookmark size={16} className="text-white group-hover:text-primary transition-colors" />}
                 </button>
 
                 {/* Add to Calendar Button */}
@@ -142,6 +200,32 @@ const OpportunityCard = ({
                     </div>
                 </div>
 
+                {/* "Outcome" Badge for Workshops */}
+                {type === 'workshop' && outcomes && outcomes.length > 0 && (
+                    <div className="mb-4 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-2">
+                        <span className="text-amber-500 text-sm">🚀</span>
+                        <div>
+                            <p className="text-[11px] font-bold text-amber-500 uppercase tracking-wider mb-0.5">Outcome</p>
+                            <p className="text-sm font-semibold text-text-main leading-tight">
+                                {outcomes.join(', ')}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* "Why should I attend?" Hook for Events */}
+                {type !== 'workshop' && perks && perks.length > 0 && (
+                    <div className="mb-4 bg-terracotta/10 border border-terracotta/20 rounded-xl p-3 flex items-start gap-2">
+                        <span className="text-terracotta text-sm">💡</span>
+                        <div>
+                            <p className="text-[11px] font-bold text-terracotta uppercase tracking-wider mb-0.5">Why Attend?</p>
+                            <p className="text-sm font-semibold text-text-main leading-tight">
+                                {perks.join(' + ')}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 {tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-6">
                         {tags.map((tag, i) => (
@@ -164,20 +248,29 @@ const OpportunityCard = ({
                         </div>
                     </div>
 
-                    <button 
-                        onClick={handleApply}
-                        disabled={isApplying || applyStatus === 'success'}
-                        className={`w-full py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-95 group/btn ${
-                            applyStatus === 'success' 
-                            ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' 
-                            : applyStatus === 'error'
-                            ? 'bg-rose-500/20 text-rose-500 border border-rose-500/30'
-                            : 'bg-text-main hover:bg-terracotta text-bg-primary hover:text-white'
-                        }`}
-                    >
-                        {isApplying ? 'Processing...' : applyStatus === 'success' ? 'Applied ✨' : applyStatus === 'error' ? 'Already Applied' : 'Apply Now'}
-                        {!applyStatus && !isApplying && <ExternalLink size={16} className="transition-transform group-hover/btn:translate-x-1" />}
-                    </button>
+                    <div className="grid grid-cols-2 gap-3">
+                        <a 
+                            href={link || "#"}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-full py-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm bg-surface border border-white/10 hover:bg-white/5 text-text-main"
+                        >
+                            View Details <ExternalLink size={14} />
+                        </a>
+                        <button 
+                            onClick={handleApply}
+                            disabled={isApplying || applyStatus === 'success'}
+                            className={`w-full py-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${
+                                applyStatus === 'success' 
+                                ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' 
+                                : applyStatus === 'error'
+                                ? 'bg-rose-500/20 text-rose-500 border border-rose-500/30'
+                                : 'bg-primary hover:bg-primary-hover text-white'
+                            }`}
+                        >
+                            {isApplying ? 'Processing...' : applyStatus === 'success' ? 'Applied ✨' : applyStatus === 'error' ? 'Already Applied' : 'Mark Applied'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
