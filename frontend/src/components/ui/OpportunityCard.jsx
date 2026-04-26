@@ -129,13 +129,19 @@ const OpportunityCard = ({
         setIsAddedToCal(true);
     };
 
-    const { user } = useAuth();
+    const { user, registrations, fetchUserRegistrations } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
         // Track a 'view' when the card appears
         if (id) trackEvent(id, 'view', user?.profileData?.year).catch(() => {});
-    }, [id, user]);
+        
+        // Check if already registered in global state
+        if (registrations && registrations.length > 0) {
+            const isReg = registrations.some(r => r.eventId?._id === id || r.eventId === id);
+            if (isReg) setApplyStatus('success');
+        }
+    }, [id, user, registrations]);
 
     const handleApply = async (e) => {
         if (e) {
@@ -163,7 +169,10 @@ const OpportunityCard = ({
             await registerForEvent(id);
             setApplyStatus('success');
             
-            // 4. Open external link if provided
+            // 4. Update global registration state
+            fetchUserRegistrations();
+            
+            // 5. Open external link if provided
             if (link) window.open(link, '_blank');
         } catch (err) {
             console.error('Registration failed:', err);

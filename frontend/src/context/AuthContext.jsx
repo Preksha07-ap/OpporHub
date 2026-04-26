@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as authService from '../api/authService';
+import { getMyRegistrations } from '../api/registrationService';
 
 const AuthContext = createContext();
 
@@ -9,6 +10,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Initialize user state from localStorage
@@ -19,6 +21,23 @@ export const AuthProvider = ({ children }) => {
     }
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserRegistrations();
+    } else {
+      setRegistrations([]);
+    }
+  }, [user]);
+
+  const fetchUserRegistrations = async () => {
+    try {
+      const data = await getMyRegistrations();
+      setRegistrations(data);
+    } catch (err) {
+      console.error("Failed to fetch registrations", err);
+    }
+  };
 
   const login = async (email, password) => {
     const data = await authService.login(email, password);
@@ -40,6 +59,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     role: user?.role || null,
+    registrations,
+    fetchUserRegistrations,
     login,
     register,
     logout,
