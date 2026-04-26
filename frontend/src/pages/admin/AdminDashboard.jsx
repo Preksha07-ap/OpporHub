@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { getPendingEvents, approveEvent, rejectEvent } from '../../api/eventService';
-import { getUsers } from '../../api/adminService';
-import { Building2, Calendar, MapPin, Check, X, Clock, Users, Mail, UserCheck, GraduationCap } from 'lucide-react';
+import { getUsers, deleteUser } from '../../api/adminService';
+import { Building2, Calendar, MapPin, Check, X, Clock, Users, Mail, UserCheck, GraduationCap, Trash2 } from 'lucide-react';
 import { formatDate } from '../../utils/formatDate';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -66,6 +66,17 @@ const AdminDashboard = () => {
       setEvents(events.filter(e => e._id !== id));
     } catch (err) {
       alert(err.response?.data?.message || 'Rejection failed');
+    }
+  };
+
+  const handleDeleteUser = async (id, name) => {
+    if (window.confirm(`Are you sure you want to delete the account for ${name}? This action cannot be undone.`)) {
+      try {
+        await deleteUser(id);
+        setUsers(users.filter(u => u._id !== id));
+      } catch (err) {
+        alert(err.response?.data?.message || 'Failed to delete user');
+      }
     }
   };
 
@@ -225,6 +236,7 @@ const AdminDashboard = () => {
                           <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase tracking-wider">Role</th>
                           <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase tracking-wider">Details</th>
                           <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase tracking-wider text-right">Joined</th>
+                          <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase tracking-wider text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -274,6 +286,16 @@ const AdminDashboard = () => {
                                 <span>{formatDate(user.createdAt)}</span>
                                 <span className="text-[10px] opacity-50 uppercase tracking-tighter">at {new Date(user.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                               </div>
+                            </td>
+                            <td className="px-6 py-5 text-right">
+                              <button 
+                                onClick={() => handleDeleteUser(user._id, user.name)}
+                                disabled={user.role === 'ADMIN'}
+                                className="p-2.5 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all border border-rose-500/20 disabled:opacity-30 disabled:cursor-not-allowed group"
+                                title="Delete User"
+                              >
+                                <Trash2 size={18} className="group-hover:scale-110 transition-transform" />
+                              </button>
                             </td>
                           </tr>
                         ))}
