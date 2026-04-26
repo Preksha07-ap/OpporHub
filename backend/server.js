@@ -28,6 +28,7 @@ app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/events', require('./src/routes/eventRoutes'));
 app.use('/api/registrations', require('./src/routes/registrationRoutes'));
 app.use('/api/analytics', require('./src/routes/analyticsRoutes'));
+app.use('/api/admin', require('./src/routes/adminRoutes'));
 
 // Error Middleware (should be after all defined routes)
 app.use(notFound);

@@ -203,5 +203,6 @@ module.exports = {
   getMyEvents,
   getPendingEvents,
   approveEvent,
-  rejectEvent
+  rejectEvent,
+  trackEngagement
 };
