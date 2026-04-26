@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import OpportunityCard from '../../components/ui/OpportunityCard';
 import SkeletonCard from '../../components/ui/SkeletonCard';
-import { Filter, Loader2, AlertCircle, ChevronDown, Zap, MapPin, Trophy, Sparkles } from 'lucide-react';
+import { Filter, Loader2, AlertCircle, ChevronDown, Zap, MapPin, Trophy, Sparkles, Building2 } from 'lucide-react';
 import { getEvents } from '../../api/eventService';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -29,7 +29,8 @@ const Events = () => {
         mode: 'All',
         perks: 'All',
         participationType: 'All',
-        duration: 'All'
+        duration: 'All',
+        collegeOnly: false
     });
     
     const [searchParams] = useSearchParams();
@@ -114,7 +115,10 @@ const Events = () => {
             if (filters.participationType !== 'All' && ev.participationType !== filters.participationType && ev.participationType !== 'Both') return false;
             if (filters.duration !== 'All' && ev.duration !== filters.duration) return false;
 
-            // 6. Time Match
+            // 6. College Filter
+            if (filters.collegeOnly && !ev.isCollegeEvent) return false;
+
+            // 7. Time Match
             if (filters.time !== 'All' && ev.startDate) {
                 const eventDate = new Date(ev.startDate);
                 const now = new Date();
@@ -267,14 +271,26 @@ const Events = () => {
                     <FilterDropdown title="Team" category="participationType" />
                     <FilterDropdown title="Duration" category="duration" />
                     
-                    {isFiltering && (
+                    <button
+                        onClick={() => setFilters(prev => ({ ...prev, collegeOnly: !prev.collegeOnly }))}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
+                            filters.collegeOnly 
+                                ? 'bg-indigo-500/20 border-indigo-500 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.3)]' 
+                                : 'bg-black/40 border-white/10 text-text-muted hover:text-text-main hover:bg-white/5 backdrop-blur-sm'
+                        }`}
+                    >
+                        <Building2 size={14} />
+                        College Only
+                    </button>
+                    
+                    {isFiltering || filters.collegeOnly ? (
                         <button
-                            onClick={() => setFilters({ type: 'All', location: 'All India', time: 'All', mode: 'All', perks: 'All', participationType: 'All', duration: 'All' })}
+                            onClick={() => setFilters({ type: 'All', location: 'All India', time: 'All', mode: 'All', perks: 'All', participationType: 'All', duration: 'All', collegeOnly: false })}
                             className="text-xs font-bold text-text-muted hover:text-white transition-colors underline ml-2"
                         >
                             Clear Filters
                         </button>
-                    )}
+                    ) : null}
                 </div>
             </div>
 

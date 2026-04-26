@@ -35,6 +35,8 @@ const PostOpportunity = () => {
         outcomes: '',
         certificate: false,
         pricing: 'Free',
+        isCollegeEvent: false,
+        collegeName: '',
         image: null
     });
 
@@ -71,6 +73,8 @@ const PostOpportunity = () => {
             data.append('perks', formData.perks);
             data.append('participationType', formData.participationType);
             data.append('duration', formData.duration);
+            data.append('isCollegeEvent', formData.isCollegeEvent);
+            data.append('collegeName', formData.collegeName);
             
             if (formData.type === 'Workshop') {
                 data.append('skillLevel', formData.skillLevel);
@@ -206,6 +210,41 @@ const PostOpportunity = () => {
                                     <option value="Other" className="bg-[#1a2a1a]">Other</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-4">
+                            <label className="flex items-center gap-3 cursor-pointer group">
+                                <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${formData.isCollegeEvent ? 'bg-primary border-primary shadow-[0_0_10px_rgba(138,154,91,0.5)]' : 'border-white/20 group-hover:border-white/40'}`}>
+                                    {formData.isCollegeEvent && <CheckCircle2 size={16} className="text-white" />}
+                                </div>
+                                <input 
+                                    type="checkbox" 
+                                    name="isCollegeEvent"
+                                    checked={formData.isCollegeEvent}
+                                    onChange={handleChange}
+                                    className="hidden"
+                                />
+                                <span className="text-sm font-bold text-text-main group-hover:text-primary transition-colors">Is this a College-hosted Event?</span>
+                            </label>
+
+                            {formData.isCollegeEvent && (
+                                <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="space-y-2 pt-2"
+                                >
+                                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider ml-1">College / University Name</label>
+                                    <input 
+                                        type="text" 
+                                        name="collegeName"
+                                        required={formData.isCollegeEvent}
+                                        value={formData.collegeName}
+                                        onChange={handleChange}
+                                        placeholder="e.g., IIT Delhi, BITS Pilani..." 
+                                        className="w-full px-4 py-3 bg-bg-card border border-primary/20 rounded-xl text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium placeholder:text-white/20"
+                                    />
+                                </motion.div>
+                            )}
                         </div>
 
                         <div className="space-y-2">

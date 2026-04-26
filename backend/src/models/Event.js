@@ -112,6 +112,13 @@ const eventSchema = new mongoose.Schema({
     enum: ['Pending', 'Approved', 'Rejected'],
     default: 'Approved',
   },
+  isCollegeEvent: {
+    type: Boolean,
+    default: false,
+  },
+  collegeName: {
+    type: String,
+  },
   organizerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -5,7 +5,7 @@ const asyncHandler = require('express-async-handler');
 // @route   POST /api/events
 // @access  Private/Organizer
 const createEvent = asyncHandler(async (req, res) => {
-  const { title, description, startDate, endDate, deadline, link, tags, location, type, format, capacity } = req.body;
+  const { title, description, startDate, endDate, deadline, link, tags, location, type, format, capacity, isCollegeEvent, collegeName } = req.body;
 
   let coverImage = '';
   if (req.file) {
@@ -25,6 +25,8 @@ const createEvent = asyncHandler(async (req, res) => {
     format,
     capacity,
     coverImage,
+    isCollegeEvent: isCollegeEvent === 'true' || isCollegeEvent === true,
+    collegeName,
     organizerId: req.user._id,
   });
 
