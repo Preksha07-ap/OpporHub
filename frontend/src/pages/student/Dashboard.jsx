@@ -58,7 +58,8 @@ const Dashboard = () => {
                         location: event?.location || 'Remote',
                         status: reg.status, // "Registered", "Cancelled", "Attended"
                         appliedDate: new Date(reg.registeredAt).toLocaleDateString(),
-                        deadline: event?.deadline ? new Date(event.deadline).toLocaleDateString() : ''
+                        deadline: event?.deadline ? new Date(event.deadline).toLocaleDateString() : '',
+                        link: event?.link || '#'
                     };
                 });
                 setApplicationsList(formatted);
@@ -74,11 +75,11 @@ const Dashboard = () => {
     const handleWithdraw = async (id) => {
         try {
             await cancelRegistration(id);
-            setApplicationsList(applicationsList.map(app => 
-                app.id === id ? { ...app, status: 'Cancelled' } : app
-            ));
+            // Remove from list entirely instead of just changing status
+            setApplicationsList(applicationsList.filter(app => app.id !== id));
         } catch (err) {
             console.error('Failed to withdraw:', err);
+            alert(err.response?.data?.message || 'Failed to withdraw application');
         }
     };
 
@@ -322,7 +323,14 @@ const Dashboard = () => {
                                                     {app.status === 'Registered' && (
                                                         <button onClick={() => handleWithdraw(app.id)} className="text-xs font-bold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-rose-500/20">Withdraw</button>
                                                     )}
-                                                    <button className="text-xs px-4 py-2 rounded-lg bg-surface border border-white/10 text-text-main font-bold hover:bg-white/5 transition-colors shadow-sm">View Details</button>
+                                                    <a 
+                                                        href={app.link} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer" 
+                                                        className="text-xs px-4 py-2 rounded-lg bg-surface border border-white/10 text-text-main font-bold hover:bg-white/5 transition-colors shadow-sm"
+                                                    >
+                                                        View Details
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
